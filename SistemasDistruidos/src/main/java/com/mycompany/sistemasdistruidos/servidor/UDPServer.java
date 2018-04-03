@@ -1,4 +1,4 @@
-package sistemasdistribuidos.servidor;
+package com.mycompany.sistemasdistruidos.servidor;
 
 import java.io.*;
 import java.net.*;

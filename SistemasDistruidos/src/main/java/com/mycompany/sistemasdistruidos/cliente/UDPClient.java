@@ -1,10 +1,10 @@
-package sistemasdistribuidos.cliente;
+package com.mycompany.sistemasdistruidos.cliente;
 
 import java.io.*;
 import java.net.*;
 import java.util.Properties;
 import java.util.Scanner;
-import sistemasdistribuidos.servidor.UDPServer;
+import com.mycompany.sistemasdistruidos.servidor.UDPServer;
 
 class UDPClient
 {
