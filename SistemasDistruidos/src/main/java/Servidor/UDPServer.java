@@ -1,10 +1,7 @@
-package com.mycompany.sistemasdistruidos.servidor;
+package Servidor;
 
 import java.io.*;
-import java.net.*;
-import java.util.ArrayList;
 import java.util.Properties;
-import java.util.Scanner;
 
 public class UDPServer
 {

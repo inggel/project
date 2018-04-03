@@ -1,4 +1,4 @@
-package com.mycompany.sistemasdistruidos.servidor;
+package Servidor;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

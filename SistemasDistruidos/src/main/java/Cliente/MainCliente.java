@@ -1,16 +1,14 @@
-package com.mycompany.sistemasdistruidos.cliente;
+package Cliente;
 
 import java.io.*;
 import java.net.*;
 import java.util.Properties;
 import java.util.Scanner;
-import com.mycompany.sistemasdistruidos.servidor.UDPServer;
+import Servidor.UDPServer;
 
-class UDPClient
+class MainCliente
 {
-   public static void main(String args[]) throws Exception
-   {
-       
+   public static void main(String args[]) throws Exception {
        
       Properties prop = UDPServer.getProp();
       String porta = prop.getProperty("prop.server.port");
@@ -22,8 +20,11 @@ class UDPClient
       byte[] receiveData = new byte[1024];
       boolean sair = true;
       Scanner sc = new Scanner(System.in);
+      int opcao = -1;
       
       while(sair){
+            System.out.println("---- Sistemas Distruibuidos ----");
+           
             System.out.print("CLIENT: ");
             String sentence = inFromUser.readLine();
             sendData = sentence.getBytes();
@@ -33,7 +34,6 @@ class UDPClient
             clientSocket.receive(receivePacket);
             String modifiedSentence = new String(receivePacket.getData());
             System.out.println("FROM SERVER: " + modifiedSentence);
-      
       }
       clientSocket.close();
    }
