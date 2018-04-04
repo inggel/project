@@ -1,5 +1,6 @@
 package Cliente;
 
+import java.math.BigInteger;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,24 @@ public class LeitorDados {
             System.out.print("Digite novamente: ");
             sc.nextLine();
             valor = lerInt();
+            System.out.println("");
+            
+        }
+        return valor;
+    }
+    
+    public BigInteger lerBigInteger(){
+        BigInteger valor;
+        
+        try{
+            valor = sc.nextBigInteger();
+            sc.nextLine();
+            
+        }catch(InputMismatchException e){
+            System.out.println("Apenas numeros são aceitos.");
+            System.out.print("Digite novamente: ");
+            sc.nextLine();
+            valor = lerBigInteger();
             System.out.println("");
             
         }
