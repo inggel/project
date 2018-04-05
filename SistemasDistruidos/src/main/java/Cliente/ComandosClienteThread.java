@@ -11,6 +11,7 @@ public class ComandosClienteThread implements Runnable {
     
     public ComandosClienteThread(){
         try{
+            System.out.println("digite:");
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
             sendData = inFromUser.readLine().getBytes();
         }
@@ -21,7 +22,7 @@ public class ComandosClienteThread implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("thread!!");
+        // Metodo run
     }
 
     public byte[] getSendData() {

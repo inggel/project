@@ -18,6 +18,8 @@ public class MainServidor {
         byte[] sendData = new byte[1024];
          BufferedReader fromServer =
                 new BufferedReader(new InputStreamReader(System.in));
+         
+         System.out.println("Servidor iniciado!");
         while(true)
            {
               DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
