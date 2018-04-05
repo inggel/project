@@ -30,12 +30,17 @@ class MainCliente
             ComandosClienteThread cmdcli = new ComandosClienteThread();
             executor.execute(cmdcli);
             
+            //Envia
             DatagramPacket sendPacket = new DatagramPacket(cmdcli.getSendData(), cmdcli.getSendData().length, IPAddress, Integer.parseInt(porta));
             clientSocket.send(sendPacket);
-            //DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            //clientSocket.receive(receivePacket);
-            //String modifiedSentence = new String(receivePacket.getData());
-            //System.out.println("FROM SERVER: " + modifiedSentence);
+            
+            //Recebe
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            clientSocket.receive(receivePacket);
+            String modifiedSentence = new String(receivePacket.getData());
+            
+            ExibeComandosThread exibCmd = new ExibeComandosThread(modifiedSentence);
+            executor.execute(exibCmd);
       }
       executor.shutdownNow();
       clientSocket.close();
