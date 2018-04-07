@@ -8,17 +8,21 @@ public class ConsumirThread implements Runnable {
     private ExecutorService executor;
     
     public ConsumirThread(List<String> comandos, ExecutorService executor){
-        this.comandos.addAll(comandos);
-        this.executor = executor;
+        if(comandos != null && !comandos.isEmpty()){
+            this.comandos.addAll(comandos);
+            this.executor = executor;
+        }
     }
     
     @Override
     public void run() {
-        LogThread logTrd = new LogThread(this.comandos);
-        ProcessaThread procTrd = new ProcessaThread(this.comandos);
-        
-        this.executor.execute(procTrd);
-        this.executor.execute(logTrd);
+        if(comandos != null && !comandos.isEmpty()){
+            LogThread logTrd = new LogThread(this.comandos);
+            ProcessaThread procTrd = new ProcessaThread(this.comandos);
+
+            this.executor.execute(procTrd);
+            this.executor.execute(logTrd);
+        }
     }
     
 }

@@ -26,7 +26,8 @@ public class MainServidor {
          ExecutorService executor = Executors.newCachedThreadPool();
          
          System.out.println("Servidor iniciado!");
-        while(true)
+         int i = 0;
+        while(i != 3)
            {
 //              DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 //              serverSocket.receive(receivePacket);
@@ -47,7 +48,7 @@ public class MainServidor {
                executor.execute(rcvTrd);
                executor.execute(conTrd);
                System.out.println("FROM CLIENT: " + rcvTrd.getComandos().toString());
-               
+               i++;
            }
       }
 }

@@ -22,24 +22,30 @@ class MainCliente
       int opcao = -1;
       ExecutorService executor = Executors.newCachedThreadPool();
             
-      while(sair){
+      int i = 0;
+      while(i != 3){
             System.out.println("---- Sistemas Distruibuidos ----");
             System.out.print("CLIENT: ");
             
             ComandosClienteThread cmdcli = new ComandosClienteThread();
             executor.execute(cmdcli);
             
-            //Envia
-            DatagramPacket sendPacket = new DatagramPacket(cmdcli.getSendData(), cmdcli.getSendData().length, IPAddress, Integer.parseInt(porta));
-            clientSocket.send(sendPacket);
-            
-            //Recebe
-            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            clientSocket.receive(receivePacket);
-            String modifiedSentence = new String(receivePacket.getData());
-            
-            ExibeComandosThread exibCmd = new ExibeComandosThread(modifiedSentence);
-            executor.execute(exibCmd);
+            if(cmdcli.getComando() != null && !(cmdcli.getComando().isEmpty())){
+                
+                sendData = cmdcli.getComando().getBytes();
+                //Envia
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, Integer.parseInt(porta));
+                clientSocket.send(sendPacket);
+
+                //Recebe
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                clientSocket.receive(receivePacket);
+                String modifiedSentence = new String(receivePacket.getData());
+
+                ExibeComandosThread exibCmd = new ExibeComandosThread(modifiedSentence);
+                executor.execute(exibCmd);
+            }
+                i++;
       }
       executor.shutdownNow();
       clientSocket.close();

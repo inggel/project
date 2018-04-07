@@ -6,34 +6,53 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecebeThread implements Runnable{
-    private byte[] receiveData = new byte[1024];
     private List<String> comandos;
     private DatagramSocket serverSocket;
-    private DatagramPacket receivePacket;
+    private String comando;
     
     public RecebeThread(DatagramSocket serverSocket){
         this.comandos = new ArrayList<>();
         this.serverSocket = serverSocket;
-        this.receivePacket = new DatagramPacket(this.receiveData, this.receiveData.length);
     }
     
     @Override
     public void run() {
         try{
-            serverSocket.receive(this.receivePacket);
-            String sentence = new String(this.receivePacket.getData());
-            comandos.add(sentence);
+            byte[] receiveData = new byte[1024];
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            while(true){
+                serverSocket.receive(receivePacket);
+                comando = new String(receivePacket.getData());
+                if(!comando.isEmpty() && !(comando == "")){
+                    System.out.println(comando+ " added");
+                    comandos.add(comando);
+                }
+            }
         }catch(Exception e){
             e.printStackTrace();
         }
     }
 
     public List<String> getComandos() {
-        return comandos;
+        return this.comandos;
     }
 
     public void setComandos(List<String> comandos) {
         this.comandos = comandos;
+    }
+
+    /**
+     * @return the comando
+     */
+    public String getComando() {
+        return comando;
+    }
+
+    /**
+     * @param comando the comando to set
+     */
+    public void setComando(String comando) {
+        this.comando = comando;
     }
     
 }
