@@ -32,7 +32,7 @@ public class RecebeThread implements Runnable{
                     System.out.println("cli:> " + comando);
                     comandos.add(comando);
                     
-                    ConsumirThread conTrd = new ConsumirThread(comandos);
+                    ConsumirThread conTrd = new ConsumirThread(comandos, receivePacket, serverSocket);
                     executor.execute(conTrd);
                 }
             }catch(Exception e){
