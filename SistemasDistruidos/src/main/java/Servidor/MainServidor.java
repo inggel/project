@@ -22,6 +22,7 @@ public class MainServidor {
                 new BufferedReader(new InputStreamReader(System.in));
          
          RecebeThread rcvTrd;
+         ConsumirThread conTrd;
          ExecutorService executor = Executors.newCachedThreadPool();
          
          System.out.println("Servidor iniciado!");
@@ -40,12 +41,13 @@ public class MainServidor {
 //              new DatagramPacket(sendData, sendData.length, IPAddress, port);
 //              serverSocket.send(sendPacket);
                
-               rcvTrd = new RecebeThread(porta, serverSocket);
+               rcvTrd = new RecebeThread(serverSocket);
+               conTrd = new ConsumirThread(rcvTrd.getComandos(), executor);
+               
                executor.execute(rcvTrd);
+               executor.execute(conTrd);
                System.out.println("FROM CLIENT: " + rcvTrd.getComandos().toString());
                
-               
-
            }
       }
 }

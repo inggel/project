@@ -1,15 +1,24 @@
 package Servidor;
 
-public class ConsumirThread implements Runnable {
+import java.util.List;
+import java.util.concurrent.ExecutorService;
 
+public class ConsumirThread implements Runnable {
+    private List<String> comandos;
+    private ExecutorService executor;
     
-    public ConsumirThread(){
-        
+    public ConsumirThread(List<String> comandos, ExecutorService executor){
+        this.comandos.addAll(comandos);
+        this.executor = executor;
     }
     
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LogThread logTrd = new LogThread(this.comandos);
+        ProcessaThread procTrd = new ProcessaThread(this.comandos);
+        
+        this.executor.execute(procTrd);
+        this.executor.execute(logTrd);
     }
     
 }

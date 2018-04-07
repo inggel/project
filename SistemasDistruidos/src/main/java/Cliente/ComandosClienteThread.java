@@ -10,23 +10,23 @@ public class ComandosClienteThread implements Runnable {
     Scanner sc = new Scanner(System.in);
     
     public ComandosClienteThread(){
+        // Construtor
+    }
+
+    @Override
+    public void run() {
         try{
-            System.out.println("digite:");
+            System.out.println("Digite: ");
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            sendData = inFromUser.readLine().getBytes();
+            this.sendData = inFromUser.readLine().getBytes();
         }
         catch(Exception ex){
             ex.printStackTrace();
         }
     }
 
-    @Override
-    public void run() {
-        // Metodo run
-    }
-
     public byte[] getSendData() {
-        return sendData;
+        return this.sendData;
     }
 
     public void setSendData(byte[] sendData) {

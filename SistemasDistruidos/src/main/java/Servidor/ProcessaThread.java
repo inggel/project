@@ -1,9 +1,12 @@
 package Servidor;
 
-public class ProcessaThread implements Runnable{
+import java.util.List;
 
-    public ProcessaThread(){
-        
+public class ProcessaThread implements Runnable{
+    private List<String> comandos;
+
+    public ProcessaThread(List<String> comandos){
+        this.comandos.addAll(comandos);
     }
     
     @Override

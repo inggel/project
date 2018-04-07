@@ -1,6 +1,5 @@
 package Cliente;
 
-import java.io.*;
 import java.net.*;
 import java.util.Properties;
 import java.util.Scanner;

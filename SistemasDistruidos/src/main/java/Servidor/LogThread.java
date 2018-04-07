@@ -1,9 +1,12 @@
 package Servidor;
 
-public class LogThread implements Runnable {
+import java.util.List;
 
-    public LogThread(){
-        
+public class LogThread implements Runnable {
+    private List<String> comandos;
+    
+    public LogThread(List<String> comandos){
+        this.comandos.addAll(comandos);
     }
     
     @Override

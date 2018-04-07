@@ -1,14 +1,15 @@
 package Cliente;
 
 public class ExibeComandosThread implements Runnable {
+    private String resposta;
     
     public ExibeComandosThread (String resposta) {
-        System.out.println("Resposta: " + resposta);
+        this.resposta = resposta;
     }
 
     @Override
     public void run() {
-        // thread
+        System.out.println("Resposta: " + this.resposta);
     }
     
 }
