@@ -4,17 +4,17 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 public class ExibeComandosThread implements Runnable {
+    private DatagramSocket clientSocket;
     
-    public ExibeComandosThread () {
+    public ExibeComandosThread (DatagramSocket clientSocket) {
+        this.clientSocket = clientSocket;
     }
 
     @Override
     public void run() {
-        DatagramSocket clientSocket;
         while(true){
             try {
                 byte[] receiveData = new byte[1024];
-                clientSocket = new DatagramSocket();
 
                 //Recebe
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);

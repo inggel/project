@@ -32,7 +32,6 @@ public class ConsumirThread implements Runnable {
                 ProcessaThread procTrd = new ProcessaThread(this.comandos);
 
                 //this.executor.execute(procTrd);
-                System.out.println("iniciando log");
                 this.executor.execute(logTrd);
                 break;
             }

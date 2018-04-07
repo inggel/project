@@ -27,31 +27,15 @@ public class MainServidor {
         ExecutorService executor = Executors.newCachedThreadPool();
 
         System.out.println("Servidor iniciado!");
-        int i = 0;
-        while(i != 3)
-           {
-//              DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-//              serverSocket.receive(receivePacket);
-//              String sentence = new String( receivePacket.getData());
-//              System.out.println("FROM CLIENT: " + sentence);
-//              InetAddress IPAddress = receivePacket.getAddress();
-//              int port = receivePacket.getPort();
-//               System.out.print("SERVER: ");
-//              String capitalizedSentence = fromServer.readLine();
-//              sendData = capitalizedSentence.getBytes();
-//              DatagramPacket sendPacket =
-//              new DatagramPacket(sendData, sendData.length, IPAddress, port);
-//              serverSocket.send(sendPacket);
-               
-               rcvTrd = new RecebeThread(serverSocket);
-               
-               executor.execute(rcvTrd);
-               System.out.println("FROM CLIENT: " + rcvTrd.getComandos().toString());
-               i++;
-            }
-            executor.shutdown();
-            while (!executor.awaitTermination(24L, TimeUnit.HOURS)) {
-                System.out.println("Ainda não. As threads ainda estão rodando.");
-            }
-      }
+        
+        rcvTrd = new RecebeThread(serverSocket);
+
+        executor.execute(rcvTrd);
+        System.out.println("FROM CLIENT: " + rcvTrd.getComandos().toString());
+
+        executor.shutdown();
+        while (!executor.awaitTermination(24L, TimeUnit.HOURS)) {
+            System.out.println("Ainda não. As threads ainda estão rodando.");
+        }
+    }
 }

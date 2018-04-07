@@ -16,7 +16,7 @@ public class LogThread implements Runnable {
         this.receivePacket = receivePacket;
         this.serverSocket = serverSocket;
         if(comandos != null && !comandos.isEmpty()){
-            System.out.println("Log iniciado");
+            System.out.println("Log iniciado.");
             this.comandos.addAll(comandos);
         }
     }

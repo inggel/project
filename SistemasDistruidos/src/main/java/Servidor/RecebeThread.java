@@ -29,7 +29,6 @@ public class RecebeThread implements Runnable{
                 serverSocket.receive(receivePacket);
                 comando = new String(receivePacket.getData());
                 if(!comando.isEmpty() && !(comando.equalsIgnoreCase(""))){
-                    System.out.println("cli:> " + comando);
                     comandos.add(comando);
                     
                     ConsumirThread conTrd = new ConsumirThread(comandos, receivePacket, serverSocket);

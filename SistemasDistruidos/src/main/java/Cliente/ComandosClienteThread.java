@@ -10,9 +10,10 @@ import java.util.Properties;
 
 public class ComandosClienteThread implements Runnable {
     private String comando;
+    private DatagramSocket clientSocket;
     
-    public ComandosClienteThread(){
-        // Construtor
+    public ComandosClienteThread(DatagramSocket clientSocket){
+        this.clientSocket = clientSocket;
     }
 
     @Override
@@ -22,7 +23,6 @@ public class ComandosClienteThread implements Runnable {
             byte[] sendData = new byte[1024];
             Properties prop = UDPServer.getProp();
             String porta = prop.getProperty("prop.server.port");
-            DatagramSocket clientSocket = new DatagramSocket();
             InetAddress IPAddress = InetAddress.getByName(prop.getProperty("prop.server.host"));
             
             comando = streamReader.readLine();
