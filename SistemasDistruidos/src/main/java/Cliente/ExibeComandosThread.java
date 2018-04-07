@@ -1,15 +1,30 @@
 package Cliente;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+
 public class ExibeComandosThread implements Runnable {
-    private String resposta;
     
-    public ExibeComandosThread (String resposta) {
-        this.resposta = resposta;
+    public ExibeComandosThread () {
     }
 
     @Override
     public void run() {
-        System.out.println("Resposta: " + this.resposta);
+        DatagramSocket clientSocket;
+        try {
+            byte[] receiveData = new byte[1024];
+            clientSocket = new DatagramSocket();
+        
+            //Recebe
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            clientSocket.receive(receivePacket);
+            String modifiedSentence = new String(receivePacket.getData());
+            
+            System.out.println("Resposta: " + modifiedSentence);
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
 }

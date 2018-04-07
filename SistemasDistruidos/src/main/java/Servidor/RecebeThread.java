@@ -4,32 +4,40 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class RecebeThread implements Runnable{
     private List<String> comandos;
     private DatagramSocket serverSocket;
     private String comando;
+    private ExecutorService executor;
     
     public RecebeThread(DatagramSocket serverSocket){
         this.comandos = new ArrayList<>();
         this.serverSocket = serverSocket;
+        this.executor = Executors.newCachedThreadPool();
     }
     
     @Override
-    public void run() {
-        try{
-            byte[] receiveData = new byte[1024];
-            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            while(true){
+    public void run() {        
+        while(true){
+            try{
+                byte[] receiveData = new byte[1024];
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                
                 serverSocket.receive(receivePacket);
                 comando = new String(receivePacket.getData());
-                if(!comando.isEmpty() && !(comando == "")){
-                    System.out.println(comando+ " added");
+                if(!comando.isEmpty() && !(comando.equalsIgnoreCase(""))){
+                    System.out.println("cli:> " + comando);
                     comandos.add(comando);
+                    
+                    ConsumirThread conTrd = new ConsumirThread(comandos);
+                    executor.execute(conTrd);
                 }
+            }catch(Exception e){
+                e.printStackTrace();
             }
-        }catch(Exception e){
-            e.printStackTrace();
         }
     }
 
