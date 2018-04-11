@@ -2,9 +2,7 @@ package Servidor;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,7 +29,6 @@ public class MainServidor {
         rcvTrd = new RecebeThread(serverSocket);
 
         executor.execute(rcvTrd);
-        System.out.println("FROM CLIENT: " + rcvTrd.getComandos().toString());
 
         executor.shutdown();
         while (!executor.awaitTermination(24L, TimeUnit.HOURS)) {

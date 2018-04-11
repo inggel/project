@@ -18,22 +18,27 @@ public class ComandosClienteThread implements Runnable {
 
     @Override
     public void run() {
-        try{
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(System.in));
-            byte[] sendData = new byte[1024];
-            Properties prop = UDPServer.getProp();
-            String porta = prop.getProperty("prop.server.port");
-            InetAddress IPAddress = InetAddress.getByName(prop.getProperty("prop.server.host"));
-            
-            comando = streamReader.readLine();
-            sendData = comando.getBytes();
-            
-            //Envia
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, Integer.parseInt(porta));
-            clientSocket.send(sendPacket);
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
+        comando = "";
+        System.out.println("Digite 'sair' para sair.");
+        System.out.println("Digite o comando>");
+        while(!comando.equalsIgnoreCase("sair")){
+            try{
+                BufferedReader streamReader = new BufferedReader(new InputStreamReader(System.in));
+                byte[] sendData = new byte[1024];
+                Properties prop = UDPServer.getProp();
+                String porta = prop.getProperty("prop.server.port");
+                InetAddress IPAddress = InetAddress.getByName(prop.getProperty("prop.server.host"));
+
+                comando = streamReader.readLine();
+                sendData = comando.getBytes();
+
+                //Envia
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, Integer.parseInt(porta));
+                clientSocket.send(sendPacket);
+            }
+            catch(Exception ex){
+                ex.printStackTrace();
+            }
         }
     }
 

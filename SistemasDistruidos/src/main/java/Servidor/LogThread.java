@@ -1,10 +1,14 @@
 package Servidor;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.StringWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class LogThread implements Runnable {
     private List<String> comandos;
@@ -28,6 +32,19 @@ public class LogThread implements Runnable {
                 byte[] sendData = new byte[1024];
                 String resp = "recebi";
                 try{
+                    File file = new File("./properties/log.properties");
+                    if(!file.exists()){
+                       file.createNewFile();
+                    }
+                    
+                    FileOutputStream fileout = new FileOutputStream(
+                                    "./properties/log.properties");
+                    Properties prop = ManFileLog.getProp();
+                    prop.put("comando", comandos.toString());
+
+                    prop.store(fileout, "Comentario 1");
+                    fileout.flush();
+                    
                     sendData = resp.getBytes();
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
                     serverSocket.send(sendPacket);
@@ -37,7 +54,7 @@ public class LogThread implements Runnable {
                 }
                 
                 System.out.println("log: "+comandos.toString());
-                break;
+                //break;
             }
         }
     }

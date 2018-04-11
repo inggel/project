@@ -48,16 +48,10 @@ public class RecebeThread implements Runnable{
         this.comandos = comandos;
     }
 
-    /**
-     * @return the comando
-     */
     public String getComando() {
         return comando;
     }
 
-    /**
-     * @param comando the comando to set
-     */
     public void setComando(String comando) {
         this.comando = comando;
     }

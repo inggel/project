@@ -23,7 +23,6 @@ public class ExibeComandosThread implements Runnable {
                 
                 if(!modifiedSentence.isEmpty()){
                     System.out.println("sv:> " + modifiedSentence);
-                    break;
                 }
 
             } catch (Exception ex) {
