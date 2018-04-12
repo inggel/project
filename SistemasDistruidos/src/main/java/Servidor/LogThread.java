@@ -1,9 +1,7 @@
 package Servidor;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.StringWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
@@ -38,11 +36,15 @@ public class LogThread implements Runnable {
                     }
                     
                     FileOutputStream fileout = new FileOutputStream(
-                                    "./properties/log.properties");
+                                    "./properties/log.properties", true);
                     Properties prop = ManFileLog.getProp();
-                    prop.put("comando", comandos.toString());
-
-                    prop.store(fileout, "Comentario 1");
+                    for(int i=0;i<comandos.size();i++){
+                        prop.put("comando", comandos.toString()
+                                .replaceAll("\u0000", "") /* removes NUL chars */
+                                .replaceAll("\\u0000", "") /* removes backslash+u0000 */);
+                    }
+                    
+                    prop.store(fileout, "Log dos comandos comment");
                     fileout.flush();
                     
                     sendData = resp.getBytes();
