@@ -30,21 +30,16 @@ public class LogThread implements Runnable {
                 byte[] sendData = new byte[1024];
                 String resp = "recebi";
                 try{
-                    File file = new File("./properties/log.properties");
-                    if(!file.exists()){
-                       file.createNewFile();
-                    }
-                    
                     FileOutputStream fileout = new FileOutputStream(
-                                    "./properties/log.properties", true);
+                                    "./properties/log.properties");
                     Properties prop = ManFileLog.getProp();
-                    for(int i=0;i<comandos.size();i++){
+                    comandos.forEach((_item) -> {
                         prop.put("comando", comandos.toString()
                                 .replaceAll("\u0000", "") /* removes NUL chars */
                                 .replaceAll("\\u0000", "") /* removes backslash+u0000 */);
-                    }
+                    });
                     
-                    prop.store(fileout, "Log dos comandos comment");
+                    prop.store(fileout, "Log dos comandos enviados pelo cliente");
                     fileout.flush();
                     
                     sendData = resp.getBytes();
