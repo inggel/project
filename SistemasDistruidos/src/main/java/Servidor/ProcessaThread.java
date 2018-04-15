@@ -41,7 +41,7 @@ public class ProcessaThread implements Runnable{
                 } else{
                     List<String> inst = new ArrayList<>();
                     inst = Arrays.asList(c.split(" ")); 
-                    //colocar a função de subs caracteres especiais
+                    //colocar a função de subs caracteres especiais 
                     if(inst.get(0).contains("4")){
                         busca = crud.search(new BigInteger(inst.get(1).getBytes()));
                              if(busca != null && !busca.isEmpty())
