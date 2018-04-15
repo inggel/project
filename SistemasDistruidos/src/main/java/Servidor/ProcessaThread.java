@@ -42,42 +42,42 @@ public class ProcessaThread implements Runnable{
                     List<String> inst = new ArrayList<>();
                     inst = Arrays.asList(c.split(" ")); 
                     //colocar a função de subs caracteres especiais
-                    if(inst.get(0).contains("4")){
-                        busca = crud.search(new BigInteger(inst.get(1).getBytes()));
-                             if(busca != null && !busca.isEmpty())
-                                dados = busca+"\n"; 
-                    }
-                    // aqui esta dando erro porque ele não passa o valor da chave correta para a funcao delete
-                    // switch nao esta entrando no update, delete e busca
-                    if(inst.get(0).contains("2")){
-                        deleta = crud.delete(new BigInteger(inst.get(1)), inst.get(2));
-                            if(deleta)
-                                dados = "Deletado com sucesso!\n";
-                    }
+//                    if(inst.get(0).contains("4")){
+//                        busca = crud.search(new BigInteger(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "")));
+//                             if(busca != null && !busca.isEmpty())
+//                                dados = busca+"\n"; 
+//                    }
+//                    // aqui esta dando erro porque ele não passa o valor da chave correta para a funcao delete
+//                    // switch nao esta entrando no update, delete e busca
+//                    if(inst.get(0).contains("2")){
+//                        deleta = crud.delete(new BigInteger(inst.get(1)), inst.get(2));
+//                            if(deleta)
+//                                dados = "Deletado com sucesso!\n";
+//                    }
                     
-                    switch(inst.get(0).charAt(0)){
+                    switch(inst.get(0).replaceAll("\u0000", "").replaceAll("\\u0000", "").charAt(0)){
                         case '1':
-                            cria = crud.create(new BigInteger(inst.get(1)), inst.get(2));
+                            cria = crud.create(new BigInteger(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "")), inst.get(2).replaceAll("\u0000", "").replaceAll("\\u0000", ""));
                             if(cria){
                                 dados = "Criado com sucesso!\n";
                             }
                             break;
 
                         case '2':
-                            deleta = crud.delete(new BigInteger(inst.get(1)), inst.get(2));
+                            deleta = crud.delete(new BigInteger(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "")), inst.get(2).replaceAll("\u0000", "").replaceAll("\\u0000", ""));
                             if(deleta)
                                 dados = "Deletado com sucesso!\n";
                             break;
 
                         case '3':
-                            atualiza = crud.update(new BigInteger(inst.get(1)), inst.get(2));
+                            atualiza = crud.update(new BigInteger(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "")), inst.get(2).replaceAll("\u0000", "").replaceAll("\\u0000", ""));
                              if(atualiza)
                                 dados = "Atualizado com sucesso!\n";
                             break;
 
 
                         case '4':
-                            busca = crud.search(new BigInteger(inst.get(1)));
+                            busca = crud.search(new BigInteger(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "")));
                              if(busca != null && !busca.isEmpty())
                                 dados = busca+"\n";
                             break;
