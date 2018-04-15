@@ -12,7 +12,7 @@ public class CRUD {
     Map<BigInteger, String> mapa = new HashMap<>();
     
     public boolean create(BigInteger chave, String valor){
-        if((!mapa.containsKey(chave)) && (!valor.equals(""))){
+        if((!mapa.containsKey(chave)) && (!valor.equals("")) && (!valor.equals(" ")) && valor != null){
             mapa.put(chave, valor);
             return true;
         }
@@ -20,23 +20,23 @@ public class CRUD {
     }
     
     public boolean update(BigInteger chave, String valor){
-        if(mapa.containsKey(chave)){
+        if(mapa.containsKey(chave) && (!valor.equals("")) && (!valor.equals(" "))){
             mapa.replace(chave, valor);
             return true;
         }
         return false;
     }
     
-    public boolean delete(BigInteger chave, String valor){
-        if(mapa.containsKey(chave)){
-            mapa.remove(chave, valor);
+    public boolean delete(BigInteger chave){
+        if(mapa.containsKey(chave) && (!chave.equals("")) && (!chave.equals(" "))){
+            mapa.remove(chave);
             return true;
         }
         return false;
     }
     
     public String search(BigInteger chave){
-        if(mapa.containsKey(chave)){
+        if(mapa.containsKey(chave) && (!chave.equals("")) && (!chave.equals(" "))){
             return mapa.get(chave);
         }
         return "";

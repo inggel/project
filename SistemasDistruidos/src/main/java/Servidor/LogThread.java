@@ -26,13 +26,15 @@ public class LogThread implements Runnable {
             if(comandos != null && !comandos.isEmpty()){
                 
                 try{ 
+                    
                     FileOutputStream fileout = new FileOutputStream(
                                     "./properties/log.properties", true);
                     Properties prop = ManFileLog.getProp();
                     comandos.forEach((_item) -> {
-                        prop.put("comando", comandos.toString()
+                            prop.put("comando", comandos.toString()
                                  .replaceAll("\u0000", "") /* removes NUL chars */
                                 .replaceAll("\\u0000", "") /* removes backslash+u0000 */);
+                        
                     });
                     
                     prop.store(fileout, "Log dos comandos enviados pelo cliente");

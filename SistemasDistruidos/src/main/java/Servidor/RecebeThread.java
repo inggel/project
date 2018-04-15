@@ -15,6 +15,7 @@ public class RecebeThread implements Runnable{
     private ExecutorService executor;
     CRUD crud;
     
+    
     public RecebeThread(DatagramSocket serverSocket, CRUD crud){
         this.serverSocket = serverSocket;
         this.executor = Executors.newCachedThreadPool();
@@ -31,10 +32,12 @@ public class RecebeThread implements Runnable{
                 serverSocket.receive(receivePacket);
                 String comando="";
                 comando = new String(receivePacket.getData());
+               
                 if(!comando.isEmpty() && !(comando.equalsIgnoreCase(""))){
                     ConsumirThread conTrd = new ConsumirThread(comando, receivePacket, serverSocket, crud);
                     executor.execute(conTrd);
                 }
+                
                 
             }catch(Exception e){
                 e.printStackTrace();

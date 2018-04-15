@@ -59,7 +59,7 @@ public class ComandosClienteThread implements Runnable {
         System.out.println("---- Sistemas Distruibuidos ----");
         System.out.println("Escolha uma das opções abaixo ");
         System.out.println("1. Criar <chave> <valor>");
-        System.out.println("2. Deletar <chave> <valor>");
+        System.out.println("2. Deletar <chave>");
         System.out.println("3. Atualizar <chave> <valor>");
         System.out.println("4. Buscar <chave>");
         System.out.println("5. Listar");

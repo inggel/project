@@ -2,5 +2,9 @@ testes trabalho SD:
 
 - Iniciar varios clientes em paralelo
 - Testar quando o servidor cair (ler o log)
-- Tamanho da chave e do valor
+- Tamanho da chave e do valor OK 
 
+
+Perguntar para o Lasaro
+- A chave e o valor devem ter 1400 bytes, ou a chave tem 1400 e o valor 1400
+- A função .equals nao funciona.

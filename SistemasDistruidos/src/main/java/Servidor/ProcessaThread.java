@@ -16,6 +16,7 @@ public class ProcessaThread implements Runnable{
     private ArrayList<String> lista =  new ArrayList<>();
     private boolean cria, deleta, atualiza;
     private CRUD crud;
+    private List<String> inst = new ArrayList<>();
 
     public ProcessaThread(String comando, DatagramPacket receivePacket, 
             DatagramSocket serverSocket, CRUD crud){
@@ -38,52 +39,53 @@ public class ProcessaThread implements Runnable{
                 if(c.contains("7")){
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
                     serverSocket.send(sendPacket);
-                } else{
-                    List<String> inst = new ArrayList<>();
-                    inst = Arrays.asList(c.split(" ")); 
-                    //colocar a função de subs caracteres especiais 
-                    if(inst.get(0).contains("4")){
-                        busca = crud.search(new BigInteger(inst.get(1).getBytes()));
-                             if(busca != null && !busca.isEmpty())
-                                dados = busca+"\n"; 
-                    }
-                    // aqui esta dando erro porque ele não passa o valor da chave correta para a funcao delete
-                    // switch nao esta entrando no update, delete e busca
-                    if(inst.get(0).contains("2")){
-                        deleta = crud.delete(new BigInteger(inst.get(1)), inst.get(2));
-                            if(deleta)
-                                dados = "Deletado com sucesso!\n";
-                    }
+                } else {
                     
-                    switch(inst.get(0).charAt(0)){
+                    inst = Arrays.asList(c.split(" ")); 
+                   
+                    switch(inst.get(0).replaceAll("\u0000", "").replaceAll("\\u0000", "").charAt(0)){
                         case '1':
-                            cria = crud.create(new BigInteger(inst.get(1)), inst.get(2));
-                            if(cria){
+                            cria = crud.create(new BigInteger(inst.get(1).replaceAll("\u0000", "").
+                                    replaceAll("\\u0000", "")), valor());
+                            if(cria)
                                 dados = "Criado com sucesso!\n";
-                            }
+                            else
+                                dados = "Não foi possivel completar a operacao\n";
                             break;
 
                         case '2':
-                            deleta = crud.delete(new BigInteger(inst.get(1)), inst.get(2));
+                            deleta = crud.delete(new BigInteger(inst.get(1).replaceAll("\u0000", "").
+                                    replaceAll("\\u0000", "")));
                             if(deleta)
                                 dados = "Deletado com sucesso!\n";
+                            else
+                                dados = "Não foi possivel completar a operacao\n";
                             break;
 
                         case '3':
-                            atualiza = crud.update(new BigInteger(inst.get(1)), inst.get(2));
+                            atualiza = crud.update(new BigInteger(inst.get(1).replaceAll("\u0000", "").
+                                    replaceAll("\\u0000", "")), valor());
                              if(atualiza)
                                 dados = "Atualizado com sucesso!\n";
+                             else
+                                dados = "Não foi possivel completar a operacao\n";
                             break;
 
 
                         case '4':
-                            busca = crud.search(new BigInteger(inst.get(1)));
+                            busca = crud.search(new BigInteger(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "")));
                              if(busca != null && !busca.isEmpty())
                                 dados = busca+"\n";
+                             else
+                                 dados = "Não existe essa chave\n";
                             break;
 
                         case '5':
                             lista = crud.read();
+                             if(lista != null && !lista.isEmpty())
+                                dados = lista+"\n";
+                             else
+                                 dados = "Não há registro de dados\n";
                             break;
 
                         default:
@@ -101,6 +103,14 @@ public class ProcessaThread implements Runnable{
             e.printStackTrace();
             e.getMessage();
         }   
+    }
+    
+    public String valor(){
+        String valor="";
+        for(int i=2; i<inst.size();i++){
+            valor += inst.get(i)+" ";
+        }
+        return valor.replaceAll("\u0000", "").replaceAll("\\u0000", "");
     }
     
 }
