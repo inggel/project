@@ -41,11 +41,11 @@ public class ProcessaThread implements Runnable{
                 } else{
                     List<String> inst = new ArrayList<>();
                     inst = Arrays.asList(c.split(" ")); 
-                    
+                    //colocar a função de subs caracteres especiais
                     if(inst.get(0).contains("4")){
                         busca = crud.search(new BigInteger(inst.get(1).getBytes()));
                              if(busca != null && !busca.isEmpty())
-                                dados = busca+"\n";
+                                dados = busca+"\n"; 
                     }
                     // aqui esta dando erro porque ele não passa o valor da chave correta para a funcao delete
                     // switch nao esta entrando no update, delete e busca
