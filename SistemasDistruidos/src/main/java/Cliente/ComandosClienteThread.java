@@ -12,6 +12,8 @@ public class ComandosClienteThread implements Runnable {
     private String comando;
     private DatagramSocket clientSocket;
     
+    public ComandosClienteThread(){}
+    
     public ComandosClienteThread(DatagramSocket clientSocket){
         this.clientSocket = clientSocket;
     }
@@ -19,17 +21,20 @@ public class ComandosClienteThread implements Runnable {
     @Override
     public void run() {
         comando = "";
-        System.out.println("Digite 'sair' para sair.");
-        System.out.println("Digite o comando>");
-        while(!comando.equalsIgnoreCase("sair")){
+        menu();
+        while(!comando.equalsIgnoreCase("7")){
             try{
                 BufferedReader streamReader = new BufferedReader(new InputStreamReader(System.in));
-                byte[] sendData = new byte[1024];
+                byte[] sendData = new byte[1400];
                 Properties prop = UDPServer.getProp();
                 String porta = prop.getProperty("prop.server.port");
                 InetAddress IPAddress = InetAddress.getByName(prop.getProperty("prop.server.host"));
 
                 comando = streamReader.readLine();
+                if(comando.equalsIgnoreCase("6")){
+                    menu();
+                }
+                
                 sendData = comando.getBytes();
 
                 //Envia
@@ -42,17 +47,24 @@ public class ComandosClienteThread implements Runnable {
         }
     }
 
-    /**
-     * @return the comando
-     */
     public String getComando() {
         return comando;
     }
 
-    /**
-     * @param comando the comando to set
-     */
     public void setComando(String comando) {
         this.comando = comando;
+    }
+    
+    public static void menu(){
+        System.out.println("---- Sistemas Distruibuidos ----");
+        System.out.println("Escolha uma das opções abaixo ");
+        System.out.println("1. Criar <chave> <valor>");
+        System.out.println("2. Deletar <chave> <valor>");
+        System.out.println("3. Atualizar <chave> <valor>");
+        System.out.println("4. Buscar <chave>");
+        System.out.println("5. Listar");
+        System.out.println("6. Visualizar menu");
+        System.out.println("7. Sair");
+        System.out.print("Digite a opção:  ");
     }
 }

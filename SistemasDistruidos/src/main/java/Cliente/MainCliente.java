@@ -11,10 +11,7 @@ class MainCliente
        
         ExecutorService executor = Executors.newCachedThreadPool();
         DatagramSocket clientSocket = new DatagramSocket();
-            
-        System.out.println("---- Sistemas Distruibuidos ----");
-        System.out.print("CLIENT: ");
-
+       
         ComandosClienteThread cmdcli = new ComandosClienteThread(clientSocket);
         ExibeComandosThread exibCmd = new ExibeComandosThread(clientSocket);
         

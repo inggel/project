@@ -1,0 +1,6 @@
+testes trabalho SD:
+
+- Iniciar varios clientes em paralelo
+- Testar quando o servidor cair (ler o log)
+- Tamanho da chave e do valor
+

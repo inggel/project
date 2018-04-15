@@ -3,7 +3,9 @@ package Servidor;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -12,26 +14,38 @@ public class ConsumirThread implements Runnable {
     private ExecutorService executor;
     private DatagramSocket serverSocket;
     private DatagramPacket receivePacket;
+    private CRUD crud;
     
-    public ConsumirThread(List<String> comandos, DatagramPacket receivePacket, DatagramSocket serverSocket){
+    public ConsumirThread(String comando, DatagramPacket receivePacket, 
+            DatagramSocket serverSocket, CRUD crud){
         this.receivePacket = receivePacket;
         this.serverSocket = serverSocket;
-        this.comandos = new ArrayList<>();
-        if(comandos != null && !comandos.isEmpty()){
-            this.comandos.addAll(comandos);
-            this.executor = Executors.newCachedThreadPool();
-        }
+        comandos = new ArrayList<>();
+        comandos.add(comando);
+        this.executor = Executors.newCachedThreadPool();
+        this.crud = crud;
     }
     
     @Override
     public void run() {
+        LogThread logTrd = null;
+        ProcessaThread procTrd = null;
         while(true){
             if(comandos != null && !comandos.isEmpty()){
-                LogThread logTrd = new LogThread(this.comandos, receivePacket, serverSocket);
-                ProcessaThread procTrd = new ProcessaThread(this.comandos);
-
-                //this.executor.execute(procTrd);
-                this.executor.execute(logTrd);
+                for(Iterator<String> c = comandos.listIterator(); c.hasNext();){
+                    String cmd = c.next();
+                    procTrd = new ProcessaThread(cmd, receivePacket, serverSocket, crud);
+                    if(!cmd.contains("7")){
+                        logTrd = new LogThread(cmd, receivePacket, serverSocket);
+                    }
+                    c.remove();
+                    if(procTrd != null)
+                        this.executor.execute(procTrd);
+                    
+                    if(logTrd != null){
+                        this.executor.execute(logTrd);
+                    }   
+                }
                 break;
             }
         }
