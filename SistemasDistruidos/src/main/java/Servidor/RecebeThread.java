@@ -1,25 +1,23 @@
 package Servidor;
 
-import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RecebeThread implements Runnable{
     private DatagramSocket serverSocket;
     private ExecutorService executor;
     CRUD crud;
+    AtomicInteger seq;
     
     
-    public RecebeThread(DatagramSocket serverSocket, CRUD crud){
+    public RecebeThread(DatagramSocket serverSocket, CRUD crud, AtomicInteger seq){
         this.serverSocket = serverSocket;
         this.executor = Executors.newCachedThreadPool();
         this.crud = crud;
+        this.seq = seq;
     }
     
     @Override
@@ -34,7 +32,7 @@ public class RecebeThread implements Runnable{
                 comando = new String(receivePacket.getData());
                
                 if(!comando.isEmpty() && !(comando.equalsIgnoreCase(""))){
-                    ConsumirThread conTrd = new ConsumirThread(comando, receivePacket, serverSocket, crud);
+                    ConsumirThread conTrd = new ConsumirThread(comando, receivePacket, serverSocket, crud, seq);
                     executor.execute(conTrd);
                 }
                 

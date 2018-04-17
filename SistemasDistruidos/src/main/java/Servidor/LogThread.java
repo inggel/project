@@ -1,23 +1,21 @@
 package Servidor;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LogThread implements Runnable {
     private List<String> comandos;
-    private DatagramPacket receivePacket;
-    private DatagramSocket serverSocket;
+    AtomicInteger seq;
             
-    public LogThread(String comando, DatagramPacket receivePacket, DatagramSocket serverSocket){
+    public LogThread(String comando, AtomicInteger seq){
         this.comandos = new ArrayList<>();
-        this.receivePacket = receivePacket;
-        this.serverSocket = serverSocket;
         this.comandos.add(comando);
+        this.seq = seq;
     }
     
     @Override
@@ -29,13 +27,12 @@ public class LogThread implements Runnable {
                     
                     FileOutputStream fileout = new FileOutputStream(
                                     "./properties/log.properties", true);
-                    Properties prop = ManFileLog.getProp();
-                    comandos.forEach((_item) -> {
-                            prop.put("comando", comandos.toString()
-                                 .replaceAll("\u0000", "") /* removes NUL chars */
+                     Properties prop = ManFileLog.getProp();
+                    for (String comando : comandos) {
+                        prop.put("comando"+seq.incrementAndGet(), comandos.toString()
+                                .replaceAll("\u0000", "") /* removes NUL chars */
                                 .replaceAll("\\u0000", "") /* removes backslash+u0000 */);
-                        
-                    });
+                    }
                     
                     prop.store(fileout, "Log dos comandos enviados pelo cliente");
                     fileout.flush();

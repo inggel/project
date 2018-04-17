@@ -6,7 +6,6 @@ import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class ProcessaThread implements Runnable{
     private List<String> comandos;
@@ -18,6 +17,11 @@ public class ProcessaThread implements Runnable{
     private CRUD crud;
     private List<String> inst = new ArrayList<>();
 
+    
+    public ProcessaThread(){
+        System.out.println("Loading...");
+    }
+    
     public ProcessaThread(String comando, DatagramPacket receivePacket, 
             DatagramSocket serverSocket, CRUD crud){
         this.comandos = new ArrayList<>();
@@ -46,7 +50,7 @@ public class ProcessaThread implements Runnable{
                     switch(inst.get(0).replaceAll("\u0000", "").replaceAll("\\u0000", "").charAt(0)){
                         case '1':
                             cria = crud.create(new BigInteger(inst.get(1).replaceAll("\u0000", "").
-                                    replaceAll("\\u0000", "")), valor());
+                                    replaceAll("\\u0000", "")), valor(inst));
                             if(cria)
                                 dados = "Criado com sucesso!\n";
                             else
@@ -64,7 +68,7 @@ public class ProcessaThread implements Runnable{
 
                         case '3':
                             atualiza = crud.update(new BigInteger(inst.get(1).replaceAll("\u0000", "").
-                                    replaceAll("\\u0000", "")), valor());
+                                    replaceAll("\\u0000", "")), valor(inst));
                              if(atualiza)
                                 dados = "Atualizado com sucesso!\n";
                              else
@@ -105,12 +109,54 @@ public class ProcessaThread implements Runnable{
         }   
     }
     
-    public String valor(){
+    public String valor(List<String> inst){
         String valor="";
         for(int i=2; i<inst.size();i++){
             valor += inst.get(i)+" ";
         }
         return valor.replaceAll("\u0000", "").replaceAll("\\u0000", "");
+    }
+    
+    public CRUD processaComando(List<String> inst, CRUD crud){
+        String dados = "";
+        String c = inst.get(1).replaceAll("\u0000", "")
+                        .replaceAll("\\u0000", "")
+                        .replaceAll("\\]","");
+        inst = Arrays.asList(c.split(" "));
+        switch(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "").charAt(0)){
+            case '1':
+                cria = crud.create(new BigInteger(inst.get(1).replaceAll("\u0000", "")
+                        .replaceAll("\\u0000", "")
+                        .replaceAll("\\]","")), valor(inst));
+                if(cria)
+                    dados = "Criado com sucesso!\n";
+                else
+                    dados = "Não foi possivel completar a operacao\n";
+                break;
+
+            case '2':
+                deleta = crud.delete(new BigInteger(inst.get(1).replaceAll("\u0000", "")
+                        .replaceAll("\\u0000", "")
+                        .replaceAll("\\]","")));
+                if(deleta)
+                    dados = "Deletado com sucesso!\n";
+                else
+                    dados = "Não foi possivel completar a operacao\n";
+                break;
+
+            case '3':
+                atualiza = crud.update(new BigInteger(inst.get(1).replaceAll("\u0000", "")
+                        .replaceAll("\\u0000", "")
+                        .replaceAll("\\]","")), valor(inst));
+                 if(atualiza)
+                    dados = "Atualizado com sucesso!\n";
+                 else
+                    dados = "Não foi possivel completar a operacao\n";
+                break;
+            default:
+                break;
+        }
+        return crud;
     }
     
 }

@@ -5,9 +5,9 @@ import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConsumirThread implements Runnable {
     private List<String> comandos;
@@ -15,15 +15,17 @@ public class ConsumirThread implements Runnable {
     private DatagramSocket serverSocket;
     private DatagramPacket receivePacket;
     private CRUD crud;
+    AtomicInteger seq;
     
     public ConsumirThread(String comando, DatagramPacket receivePacket, 
-            DatagramSocket serverSocket, CRUD crud){
+            DatagramSocket serverSocket, CRUD crud, AtomicInteger seq){
         this.receivePacket = receivePacket;
         this.serverSocket = serverSocket;
         comandos = new ArrayList<>();
         comandos.add(comando);
         this.executor = Executors.newCachedThreadPool();
         this.crud = crud;
+        this.seq = seq;
     }
     
     @Override
@@ -38,15 +40,15 @@ public class ConsumirThread implements Runnable {
                     if(!cmd.contains("6"))
                         procTrd = new ProcessaThread(cmd, receivePacket, serverSocket, crud);
                     
-                    if(!cmd.contains("7") && !cmd.contains("6")){
-                        logTrd = new LogThread(cmd, receivePacket, serverSocket);
+                    if(!cmd.contains("7") && !cmd.contains("6") && !cmd.contains("5")){
+                        logTrd = new LogThread(cmd, seq);
                     }
                     
                     c.remove();
                     
-                    if(procTrd != null)
+                    if(procTrd != null){
                         this.executor.execute(procTrd);
-                    
+                    }
                     if(logTrd != null){
                         this.executor.execute(logTrd);
                     }   

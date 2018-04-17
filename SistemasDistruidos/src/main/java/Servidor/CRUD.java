@@ -9,43 +9,43 @@ import java.util.Properties;
 
 public class CRUD {
     
-    Map<BigInteger, String> mapa = new HashMap<>();
+    private Map<BigInteger, String> mapa = new HashMap<>();
     
     public boolean create(BigInteger chave, String valor){
         if((!mapa.containsKey(chave)) && (!valor.equals("")) && (!valor.equals(" ")) && valor != null){
-            mapa.put(chave, valor);
+            getMapa().put(chave, valor);
             return true;
         }
         return false;
     }
     
     public boolean update(BigInteger chave, String valor){
-        if(mapa.containsKey(chave) && (!valor.equals("")) && (!valor.equals(" "))){
-            mapa.replace(chave, valor);
+        if(getMapa().containsKey(chave) && (!valor.equals("")) && (!valor.equals(" "))){
+            getMapa().replace(chave, valor);
             return true;
         }
         return false;
     }
     
     public boolean delete(BigInteger chave){
-        if(mapa.containsKey(chave) && (!chave.equals("")) && (!chave.equals(" "))){
-            mapa.remove(chave);
+        if(getMapa().containsKey(chave) && (!chave.equals("")) && (!chave.equals(" "))){
+            getMapa().remove(chave);
             return true;
         }
         return false;
     }
     
     public String search(BigInteger chave){
-        if(mapa.containsKey(chave) && (!chave.equals("")) && (!chave.equals(" "))){
-            return mapa.get(chave);
+        if(getMapa().containsKey(chave) && (!chave.equals("")) && (!chave.equals(" "))){
+            return getMapa().get(chave);
         }
         return "";
     }
     
     public ArrayList<String> read(){
         ArrayList<String> valores = new ArrayList<>();
-        for(BigInteger bi : mapa.keySet()){
-            valores.add(mapa.get(bi));
+        for(BigInteger bi : getMapa().keySet()){
+            valores.add(getMapa().get(bi));
         }
         return valores;
     }
@@ -71,6 +71,14 @@ public class CRUD {
                 } catch(Exception ex){
                     ex.printStackTrace();
                 }
+    }
+
+    public Map<BigInteger, String> getMapa() {
+        return mapa;
+    }
+
+    public void setMapa(Map<BigInteger, String> mapa) {
+        this.mapa = mapa;
     }
      
 }
