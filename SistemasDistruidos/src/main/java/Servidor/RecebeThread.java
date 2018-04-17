@@ -8,8 +8,7 @@ import java.util.concurrent.Executors;
 public class RecebeThread implements Runnable{
     private DatagramSocket serverSocket;
     private ExecutorService executor;
-    CRUD crud;
-    
+    private CRUD crud;
     
     public RecebeThread(DatagramSocket serverSocket, CRUD crud){
         this.serverSocket = serverSocket;
@@ -28,12 +27,12 @@ public class RecebeThread implements Runnable{
                 String comando="";
                 comando = new String(receivePacket.getData());
                
+                // Cria thread de consumir da fila e enviar para log e processador do comando.
                 if(!comando.isEmpty() && !(comando.equalsIgnoreCase(""))){
                     ConsumirThread conTrd = new ConsumirThread(comando, receivePacket, serverSocket, crud);
                     executor.execute(conTrd);
                 }
-                
-                
+                                
             }catch(Exception e){
                 e.printStackTrace();
             }

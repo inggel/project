@@ -1,7 +1,5 @@
 package Servidor;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.DatagramSocket;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -18,24 +16,27 @@ import java.util.Set;
 
 public class MainServidor {
     public static void main(String args[]) throws Exception {
-        
+        // Lista com os comandos do log
         List<String> inst = new ArrayList<>();
+        // Arquivo de propriedade porta e ip
         Properties prop = UDPServer.getProp();
+        // Propertie para o arquivo de log
         Properties recarrega;
-        ProcessaThread pt = new ProcessaThread();
+        // Mapa e crud para converter e armazenar os dados do arquivo de log
+        Map<BigInteger, String> map;
+        CRUD crud = new CRUD();
+        
+        // Thread que ira receber os comandos do cliente
+        RecebeThread rcvTrd;
         
         String porta = prop.getProperty("prop.server.port");
-        CRUD crud = new CRUD();
-        Map<BigInteger, String> map;
-                
         DatagramSocket serverSocket = new DatagramSocket(Integer.parseInt(porta));
         byte[] receiveData = new byte[1400];
         byte[] sendData = new byte[1400];
-        BufferedReader fromServer =
-               new BufferedReader(new InputStreamReader(System.in));
 
         try{
-            RecebeThread rcvTrd;
+            // Carrega o log
+            ProcessaThread pt = new ProcessaThread();        
             ExecutorService executor = Executors.newCachedThreadPool();
             
             File file = new File("./properties/log.properties");
@@ -51,7 +52,7 @@ public class MainServidor {
                     crud = pt.processaComando(inst, crud);
                 }
             }
-            
+            // Inicia thread para receber comandos dos clientes
             System.out.println("Servidor iniciado!");
             rcvTrd = new RecebeThread(serverSocket, crud);
             executor.execute(rcvTrd);

@@ -19,11 +19,12 @@ public class ProcessaThread implements Runnable{
 
     
     public ProcessaThread(){
+        /* Construtor para usar o metodo de recuperacão de dados pelo log */
         System.out.println("Loading...");
     }
     
     public ProcessaThread(String comando, DatagramPacket receivePacket, 
-            DatagramSocket serverSocket, CRUD crud){
+                                DatagramSocket serverSocket, CRUD crud){
         this.comandos = new ArrayList<>();
         this.comandos.add(comando);
         this.receivePacket = receivePacket;
@@ -40,6 +41,7 @@ public class ProcessaThread implements Runnable{
             for(String c : comandos){
                 sendData = c.getBytes();
                 
+                /* Caso o comando do cliente seja 7 envia para o cliente 7 para encerrar */
                 if(c.contains("7")){
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
                     serverSocket.send(sendPacket);
@@ -48,6 +50,7 @@ public class ProcessaThread implements Runnable{
                     inst = Arrays.asList(c.split(" ")); 
                    
                     switch(inst.get(0).replaceAll("\u0000", "").replaceAll("\\u0000", "").charAt(0)){
+                        /* Criar um dado no map */
                         case '1':
                             cria = crud.create(new BigInteger(inst.get(1).replaceAll("\u0000", "").
                                     replaceAll("\\u0000", "")), valor(inst));
@@ -56,7 +59,8 @@ public class ProcessaThread implements Runnable{
                             else
                                 dados = "Não foi possivel completar a operacao\n";
                             break;
-
+                        
+                        /* Deletar um dado no map */
                         case '2':
                             deleta = crud.delete(new BigInteger(inst.get(1).replaceAll("\u0000", "").
                                     replaceAll("\\u0000", "")));
@@ -66,6 +70,7 @@ public class ProcessaThread implements Runnable{
                                 dados = "Não foi possivel completar a operacao\n";
                             break;
 
+                        /* Atualizar um dado no map */
                         case '3':
                             atualiza = crud.update(new BigInteger(inst.get(1).replaceAll("\u0000", "").
                                     replaceAll("\\u0000", "")), valor(inst));
@@ -75,7 +80,7 @@ public class ProcessaThread implements Runnable{
                                 dados = "Não foi possivel completar a operacao\n";
                             break;
 
-
+                        /* Busca um dado no map */
                         case '4':
                             busca = crud.search(new BigInteger(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "")));
                              if(busca != null && !busca.isEmpty())
@@ -84,6 +89,7 @@ public class ProcessaThread implements Runnable{
                                  dados = "Não existe essa chave\n";
                             break;
 
+                        /* Lista todos os dados do map */
                         case '5':
                             lista = crud.read();
                              if(lista != null && !lista.isEmpty())
@@ -96,7 +102,7 @@ public class ProcessaThread implements Runnable{
                             break;
                     }
                         
-                    dados += "Digite a opcao: ";
+                    dados += "Digite a opcão: ";
                     sendData = dados.getBytes();
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
                     serverSocket.send(sendPacket);
@@ -109,14 +115,18 @@ public class ProcessaThread implements Runnable{
         }   
     }
     
+    /* Substitui os lixos tragos junto com os dados e concatena as strings passadas*/
     public String valor(List<String> inst){
-        String valor="";
-        for(int i=2; i<inst.size();i++){
+        String valor = "";
+        
+        for(int i=2; i < inst.size(); i++){
             valor += inst.get(i)+" ";
         }
+        
         return valor.replaceAll("\u0000", "").replaceAll("\\u0000", "");
     }
     
+    /* Metodo utilizado pelo log para carregar os dados no map de dados */
     public CRUD processaComando(List<String> inst, CRUD crud){
         String dados = "";
         String c = inst.get(1).replaceAll("\u0000", "")

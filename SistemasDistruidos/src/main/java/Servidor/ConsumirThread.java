@@ -16,7 +16,7 @@ public class ConsumirThread implements Runnable {
     private CRUD crud;
     
     public ConsumirThread(String comando, DatagramPacket receivePacket, 
-            DatagramSocket serverSocket, CRUD crud){
+                                DatagramSocket serverSocket, CRUD crud){
         this.receivePacket = receivePacket;
         this.serverSocket = serverSocket;
         comandos = new ArrayList<>();
@@ -32,12 +32,16 @@ public class ConsumirThread implements Runnable {
         while(true){
             if(comandos != null && !comandos.isEmpty()){
                 for(Iterator<String> c = comandos.listIterator(); c.hasNext();){
-                    String cmd = c.next(), co;
-                    co = ""+cmd.charAt(0);
+                    String cmd = c.next();
+                    String co = "" + cmd.charAt(0);
                     
-                    if(!co.contains("6"))
+                    // Comando que e para exibir o menu novamente ao cliente nao precisa ser processado
+                    if(!co.contains("6")){
                         procTrd = new ProcessaThread(cmd, receivePacket, serverSocket, crud);
+                    }
                     
+                    /* Comando que e para sair, exibir o menu novamente e 
+                    listar ao cliente nao precisa ser processado*/
                     if(!co.contains("7") && !co.contains("6") && !co.contains("5")){
                         logTrd = new LogThread(cmd);
                     }
@@ -47,9 +51,10 @@ public class ConsumirThread implements Runnable {
                     if(procTrd != null){
                         this.executor.execute(procTrd);
                     }
+                    
                     if(logTrd != null){
                         this.executor.execute(logTrd);
-                    }   
+                    }
                 }
                 break;
             }

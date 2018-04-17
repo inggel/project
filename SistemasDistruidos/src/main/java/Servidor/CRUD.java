@@ -57,11 +57,11 @@ public class CRUD {
                     Properties prop = ManFileLog.getProp();
                    
                     prop.put("chave", chave.toString()
-                             .replaceAll("\u0000", "") /* removes NUL chars */
+                            .replaceAll("\u0000", "") /* removes NUL chars */
                             .replaceAll("\\u0000", "") /* removes backslash+u0000 */);
                     
                     prop.put("valor", valor.toString()
-                             .replaceAll("\u0000", "") /* removes NUL chars */
+                            .replaceAll("\u0000", "") /* removes NUL chars */
                             .replaceAll("\\u0000", "") /* removes backslash+u0000 */);
                     
                     
