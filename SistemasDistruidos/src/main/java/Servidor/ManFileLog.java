@@ -11,7 +11,6 @@ public class ManFileLog {
 		FileInputStream file = new FileInputStream(
 				"./properties/log.properties");
 		props.load(file);
-                file.close();
 		return props;
    }
 }

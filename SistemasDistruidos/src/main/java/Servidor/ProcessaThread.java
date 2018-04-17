@@ -123,7 +123,7 @@ public class ProcessaThread implements Runnable{
                         .replaceAll("\\u0000", "")
                         .replaceAll("\\]","");
         inst = Arrays.asList(c.split(" "));
-        switch(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "").charAt(0)){
+        switch(inst.get(0).replaceAll("\u0000", "").replaceAll("\\u0000", "").charAt(0)){
             case '1':
                 cria = crud.create(new BigInteger(inst.get(1).replaceAll("\u0000", "")
                         .replaceAll("\\u0000", "")

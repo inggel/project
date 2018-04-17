@@ -21,8 +21,9 @@ public class ExibeComandosThread implements Runnable {
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 clientSocket.receive(receivePacket);
                 String modifiedSentence = new String(receivePacket.getData());
+                String co = ""+modifiedSentence.charAt(0);
                 
-                if(modifiedSentence.contains("7")){
+                if(co.contains("7")){
                     System.out.println("Encerrando!");
                     break;
                 }

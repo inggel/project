@@ -35,12 +35,13 @@ public class ConsumirThread implements Runnable {
         while(true){
             if(comandos != null && !comandos.isEmpty()){
                 for(Iterator<String> c = comandos.listIterator(); c.hasNext();){
-                    String cmd = c.next();
+                    String cmd = c.next(), co;
+                    co = ""+cmd.charAt(0);
                     
-                    if(!cmd.contains("6"))
+                    if(!co.contains("6"))
                         procTrd = new ProcessaThread(cmd, receivePacket, serverSocket, crud);
                     
-                    if(!cmd.contains("7") && !cmd.contains("6") && !cmd.contains("5")){
+                    if(!co.contains("7") && !co.contains("6") && !co.contains("5")){
                         logTrd = new LogThread(cmd, seq);
                     }
                     

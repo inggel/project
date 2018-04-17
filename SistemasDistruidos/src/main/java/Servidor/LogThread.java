@@ -29,7 +29,7 @@ public class LogThread implements Runnable {
                                     "./properties/log.properties", true);
                      Properties prop = ManFileLog.getProp();
                     for (String comando : comandos) {
-                        prop.put("comando"+seq.incrementAndGet(), comandos.toString()
+                        prop.put("comando"+java.util.UUID.randomUUID(), comandos.toString()
                                 .replaceAll("\u0000", "") /* removes NUL chars */
                                 .replaceAll("\\u0000", "") /* removes backslash+u0000 */);
                     }
