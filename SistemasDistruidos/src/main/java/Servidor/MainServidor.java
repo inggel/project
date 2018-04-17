@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainServidor {
     public static void main(String args[]) throws Exception {
@@ -54,8 +53,7 @@ public class MainServidor {
             }
             
             System.out.println("Servidor iniciado!");
-            AtomicInteger seq = new AtomicInteger();
-            rcvTrd = new RecebeThread(serverSocket, crud, seq);
+            rcvTrd = new RecebeThread(serverSocket, crud);
             executor.execute(rcvTrd);
 
             executor.shutdown();

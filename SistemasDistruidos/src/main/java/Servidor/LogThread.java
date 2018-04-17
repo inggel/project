@@ -1,21 +1,16 @@
 package Servidor;
 
 import java.io.FileOutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class LogThread implements Runnable {
     private List<String> comandos;
-    AtomicInteger seq;
             
-    public LogThread(String comando, AtomicInteger seq){
+    public LogThread(String comando){
         this.comandos = new ArrayList<>();
         this.comandos.add(comando);
-        this.seq = seq;
     }
     
     @Override

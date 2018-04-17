@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConsumirThread implements Runnable {
     private List<String> comandos;
@@ -15,17 +14,15 @@ public class ConsumirThread implements Runnable {
     private DatagramSocket serverSocket;
     private DatagramPacket receivePacket;
     private CRUD crud;
-    AtomicInteger seq;
     
     public ConsumirThread(String comando, DatagramPacket receivePacket, 
-            DatagramSocket serverSocket, CRUD crud, AtomicInteger seq){
+            DatagramSocket serverSocket, CRUD crud){
         this.receivePacket = receivePacket;
         this.serverSocket = serverSocket;
         comandos = new ArrayList<>();
         comandos.add(comando);
         this.executor = Executors.newCachedThreadPool();
         this.crud = crud;
-        this.seq = seq;
     }
     
     @Override
@@ -42,7 +39,7 @@ public class ConsumirThread implements Runnable {
                         procTrd = new ProcessaThread(cmd, receivePacket, serverSocket, crud);
                     
                     if(!co.contains("7") && !co.contains("6") && !co.contains("5")){
-                        logTrd = new LogThread(cmd, seq);
+                        logTrd = new LogThread(cmd);
                     }
                     
                     c.remove();
