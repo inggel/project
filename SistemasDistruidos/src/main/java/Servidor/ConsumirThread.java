@@ -42,7 +42,7 @@ public class ConsumirThread implements Runnable {
                     
                     /* Comando que e para sair, exibir o menu novamente e 
                     listar ao cliente nao precisa ser processado*/
-                    if(!co.contains("7") && !co.contains("6") && !co.contains("5")){
+                    if(!co.contains("7") && !co.contains("6") && !co.contains("5") && !co.contains("4")){
                         logTrd = new LogThread(cmd);
                     }
                     

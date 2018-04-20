@@ -2,7 +2,6 @@ package Servidor;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -25,8 +24,9 @@ public class LogThread implements Runnable {
                     FileOutputStream fileout = new FileOutputStream(
                                     "./properties/log.properties", true);
                      Properties prop = ManFileLog.getProp();
+                     prop.clear();
                     for (String comando : comandos) {
-                        prop.put("comando"+java.util.UUID.randomUUID(), comandos.toString()
+                        prop.put("comando"+java.util.UUID.randomUUID(), ("[" + comando + "]")
                                 .replaceAll("\u0000", "") /* removes NUL chars */
                                 .replaceAll("\\u0000", "") /* removes backslash+u0000 */);
                     }
