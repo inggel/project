@@ -34,7 +34,7 @@ public class ProcessaThread implements Runnable{
     
     @Override
     public void run() {
-        byte[] sendData = new byte[1400];
+        byte[] sendData = new byte[1401];
         String dados="";
         
         try{

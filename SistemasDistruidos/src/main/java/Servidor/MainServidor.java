@@ -31,8 +31,8 @@ public class MainServidor {
         
         String porta = prop.getProperty("prop.server.port");
         DatagramSocket serverSocket = new DatagramSocket(Integer.parseInt(porta));
-        byte[] receiveData = new byte[1400];
-        byte[] sendData = new byte[1400];
+        byte[] receiveData = new byte[1401];
+        byte[] sendData = new byte[1401];
 
         try{
             // Carrega o log

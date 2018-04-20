@@ -15,7 +15,7 @@ public class ExibeComandosThread implements Runnable {
     public void run() {
         while(true){
             try {
-                byte[] receiveData = new byte[1400];
+                byte[] receiveData = new byte[1401];
                 
                 //Recebe
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);

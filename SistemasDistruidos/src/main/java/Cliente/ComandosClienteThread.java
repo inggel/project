@@ -6,7 +6,11 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import Servidor.ProcessaThread;
 
 public class ComandosClienteThread implements Runnable {
     private String comando;
@@ -25,7 +29,7 @@ public class ComandosClienteThread implements Runnable {
         while(!comando.equalsIgnoreCase("7")){
             try{
                 BufferedReader streamReader = new BufferedReader(new InputStreamReader(System.in));
-                byte[] sendData = new byte[1400];
+                byte[] sendData = new byte[1401];
                 Properties prop = UDPServer.getProp();
                 String porta = prop.getProperty("prop.server.port");
                 InetAddress IPAddress = InetAddress.getByName(prop.getProperty("prop.server.host"));
@@ -35,11 +39,31 @@ public class ComandosClienteThread implements Runnable {
                     menu();
                 }
                 
-                sendData = comando.getBytes();
+                if(!comando.equals("6")){
+                    ProcessaThread threadServidor = new ProcessaThread();
+                    List<String> comandosCliente = new ArrayList<>();
+                    String verificaChave="";
+                    String verificaValor="";
 
-                //Envia
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, Integer.parseInt(porta));
-                clientSocket.send(sendPacket);
+                    comandosCliente = Arrays.asList(comando.split(" "));
+                    if(!comando.equals("5") && !comando.equals("7"))
+                        verificaChave = comandosCliente.get(1);
+                    if(comando.equals("5") || comando.equals("7"))
+                        verificaChave = comando;
+                    
+                    verificaValor = threadServidor.valor(comandosCliente);
+                    /*verifica se o tamanho é <= ao descrito no documento do projeto*/
+                    if(verificaChave.length() <= 20 && verificaValor.length() <= 1400 ){
+                        sendData = comando.getBytes();
+                        //Envia
+                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, Integer.parseInt(porta));
+                        clientSocket.send(sendPacket);
+                    } else{
+                        System.out.println("Tamanho da chave ou valor excedido");
+                        menu();
+                    }
+                   
+                }
             }
             catch(Exception ex){
                 ex.printStackTrace();

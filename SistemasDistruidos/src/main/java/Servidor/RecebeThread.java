@@ -20,7 +20,7 @@ public class RecebeThread implements Runnable{
     public void run() {        
         while(true){
             try{
-                byte[] receiveData = new byte[1400];
+                byte[] receiveData = new byte[1401];
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 
                 serverSocket.receive(receivePacket);

@@ -35,12 +35,27 @@ public class CRUD {
         return false;
     }
     
+    /*public boolean delete(String valor){
+        if(getMapa().containsKey(valor) && (!valor.equals("")) && (!valor.equals(" "))){
+            getMapa().remove(valor);
+            return true;
+        }
+        return false;
+    }*/
+    
     public String search(BigInteger chave){
         if(getMapa().containsKey(chave) && (!chave.equals("")) && (!chave.equals(" "))){
             return getMapa().get(chave);
         }
         return "";
     }
+    
+    /*public String search(String valor){
+        if(getMapa().containsValue(valor) && (!valor.equals("")) && (!valor.equals(" "))){
+            return getMapa().get(valor);
+        }
+        return "";
+    }*/
     
     public ArrayList<String> read(){
         ArrayList<String> valores = new ArrayList<>();
