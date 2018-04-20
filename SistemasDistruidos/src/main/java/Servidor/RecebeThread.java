@@ -25,7 +25,7 @@ public class RecebeThread implements Runnable{
                 
                 serverSocket.receive(receivePacket);
                 String comando="";
-                comando = new String(receivePacket.getData());
+                comando = new String(receivePacket.getData(), 0, receivePacket.getLength());
                
                 // Cria thread de consumir da fila e enviar para log e processador do comando.
                 if(!comando.isEmpty() && !(comando.equalsIgnoreCase(""))){

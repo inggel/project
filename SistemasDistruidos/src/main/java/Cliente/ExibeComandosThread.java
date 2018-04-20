@@ -20,7 +20,7 @@ public class ExibeComandosThread implements Runnable {
                 //Recebe
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 clientSocket.receive(receivePacket);
-                String modifiedSentence = new String(receivePacket.getData());
+                String modifiedSentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
                 String co = ""+modifiedSentence.charAt(0);
                 
                 if(co.contains("7")){
