@@ -102,10 +102,11 @@ public class ProcessaThread implements Runnable{
                             break;
                     }
                         
-                    dados += "Digite a opcão: ";
+                    //dados += "Digite a opcão: ";
                     sendData = dados.getBytes();
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
                     serverSocket.send(sendPacket);
+                    //System.out.println(dados);
                 }
                 break;
             }

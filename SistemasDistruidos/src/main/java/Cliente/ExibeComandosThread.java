@@ -31,9 +31,8 @@ public class ExibeComandosThread implements Runnable {
                 
                 if(!modifiedSentence.isEmpty()){
                     System.out.println("sv:> " + modifiedSentence);
+                    System.out.print("Digite a opção: ");
                 }
-                
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

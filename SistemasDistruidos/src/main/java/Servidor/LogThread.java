@@ -30,7 +30,7 @@ public class LogThread implements Runnable {
                                 .replaceAll("\u0000", "") /* removes NUL chars */
                                 .replaceAll("\\u0000", "") /* removes backslash+u0000 */);
                     }
-                     System.out.println("log: "+comandos.toString());
+                    //System.out.println("log: "+comandos.toString());
                     prop.store(fileout, "Log dos comandos enviados pelo cliente");
                     fileout.flush();
                     
