@@ -5,10 +5,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class ProcessaThread implements Runnable{
-    private List<String> comandos;
+    private Queue<String> comandos = new LinkedList<>();
     private DatagramPacket receivePacket;
     private DatagramSocket serverSocket;
     private String busca;
@@ -17,19 +20,8 @@ public class ProcessaThread implements Runnable{
     private CRUD crud;
     private List<String> inst = new ArrayList<>();
 
-    
     public ProcessaThread(){
-        /* Construtor para usar o metodo de recuperacão de dados pelo log */
-        System.out.println("Loading...");
-    }
-    
-    public ProcessaThread(String comando, DatagramPacket receivePacket, 
-                                DatagramSocket serverSocket, CRUD crud){
-        this.comandos = new ArrayList<>();
-        this.comandos.add(comando);
-        this.receivePacket = receivePacket;
-        this.serverSocket = serverSocket;
-        this.crud = crud;
+        // ctor
     }
     
     @Override
@@ -38,13 +30,16 @@ public class ProcessaThread implements Runnable{
         String dados="";
         
         try{
-            for(String c : comandos){
+            Iterator<String> cmd = comandos.iterator();
+                
+            while(cmd.hasNext()){
+                String c = cmd.next();
                 sendData = c.getBytes();
                 
                 /* Caso o comando do cliente seja 7 envia para o cliente 7 para encerrar */
-                if(c.contains("7")){
-                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
-                    serverSocket.send(sendPacket);
+                if((""+c.charAt(0)).contains("7")){
+                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
+                    getServerSocket().send(sendPacket);
                 } else {
                     
                     inst = Arrays.asList(c.split(" ")); 
@@ -52,7 +47,7 @@ public class ProcessaThread implements Runnable{
                     switch(inst.get(0).replaceAll("\u0000", "").replaceAll("\\u0000", "").charAt(0)){
                         /* Criar um dado no map */
                         case '1':
-                            cria = crud.create(new BigInteger(inst.get(1).replaceAll("\u0000", "").
+                            cria = getCrud().create(new BigInteger(inst.get(1).replaceAll("\u0000", "").
                                     replaceAll("\\u0000", "")), valor(inst));
                             if(cria)
                                 dados = "Criado com sucesso!\n";
@@ -62,7 +57,7 @@ public class ProcessaThread implements Runnable{
                         
                         /* Deletar um dado no map */
                         case '2':
-                            deleta = crud.delete(new BigInteger(inst.get(1).replaceAll("\u0000", "").
+                            deleta = getCrud().delete(new BigInteger(inst.get(1).replaceAll("\u0000", "").
                                     replaceAll("\\u0000", "")));
                             if(deleta)
                                 dados = "Deletado com sucesso!\n";
@@ -72,7 +67,7 @@ public class ProcessaThread implements Runnable{
 
                         /* Atualizar um dado no map */
                         case '3':
-                            atualiza = crud.update(new BigInteger(inst.get(1).replaceAll("\u0000", "").
+                            atualiza = getCrud().update(new BigInteger(inst.get(1).replaceAll("\u0000", "").
                                     replaceAll("\\u0000", "")), valor(inst));
                              if(atualiza)
                                 dados = "Atualizado com sucesso!\n";
@@ -82,7 +77,7 @@ public class ProcessaThread implements Runnable{
 
                         /* Busca um dado no map */
                         case '4':
-                            busca = crud.search(new BigInteger(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "")));
+                            busca = getCrud().search(new BigInteger(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "")));
                              if(busca != null && !busca.isEmpty())
                                 dados = busca+"\n";
                              else
@@ -91,7 +86,7 @@ public class ProcessaThread implements Runnable{
 
                         /* Lista todos os dados do map */
                         case '5':
-                            lista = crud.read();
+                            lista = getCrud().read();
                              if(lista != null && !lista.isEmpty())
                                 dados = lista+"\n";
                              else
@@ -102,12 +97,12 @@ public class ProcessaThread implements Runnable{
                             break;
                     }
                         
-                    //dados += "Digite a opcão: ";
                     sendData = dados.getBytes();
-                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
-                    serverSocket.send(sendPacket);
-                    //System.out.println(dados);
+                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
+                    getServerSocket().send(sendPacket);
                 }
+                
+                cmd.remove();
                 break;
             }
         } catch(Exception e){
@@ -170,6 +165,34 @@ public class ProcessaThread implements Runnable{
                 break;
         }
         return crud;
+    }
+    
+    public void addComando(String comando){
+        comandos.add(comando);
+    }
+
+    public DatagramPacket getReceivePacket() {
+        return receivePacket;
+    }
+
+    public void setReceivePacket(DatagramPacket receivePacket) {
+        this.receivePacket = receivePacket;
+    }
+
+    public DatagramSocket getServerSocket() {
+        return serverSocket;
+    }
+
+    public void setServerSocket(DatagramSocket serverSocket) {
+        this.serverSocket = serverSocket;
+    }
+
+    public CRUD getCrud() {
+        return crud;
+    }
+
+    public void setCrud(CRUD crud) {
+        this.crud = crud;
     }
     
 }

@@ -2,48 +2,50 @@ package Servidor;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ConsumirThread implements Runnable {
-    private List<String> comandos;
+    private Queue<String> comandos = new LinkedList<>();
     private ExecutorService executor;
     private DatagramSocket serverSocket;
     private DatagramPacket receivePacket;
     private CRUD crud;
+    LogThread logTrd;
+    ProcessaThread procTrd;
     
-    public ConsumirThread(String comando, DatagramPacket receivePacket, 
-                                DatagramSocket serverSocket, CRUD crud){
-        this.receivePacket = receivePacket;
-        this.serverSocket = serverSocket;
-        comandos = new ArrayList<>();
-        comandos.add(comando);
+    public ConsumirThread(){
         this.executor = Executors.newCachedThreadPool();
-        this.crud = crud;
+        logTrd = new LogThread();
+        procTrd  = new ProcessaThread();
     }
-    
+        
     @Override
     public void run() {
-        LogThread logTrd = null;
-        ProcessaThread procTrd = null;
         while(true){
-            if(comandos != null && !comandos.isEmpty()){
-                for(Iterator<String> c = comandos.listIterator(); c.hasNext();){
+            if(getComandos() != null && !comandos.isEmpty()){
+                
+                Iterator<String> c = getComandos().iterator();
+                
+                while(c.hasNext()){
                     String cmd = c.next();
                     String co = "" + cmd.charAt(0);
                     
                     // Comando que e para exibir o menu novamente ao cliente nao precisa ser processado
                     if(!co.contains("6")){
-                        procTrd = new ProcessaThread(cmd, receivePacket, serverSocket, crud);
+                        procTrd.setReceivePacket(receivePacket);
+                        procTrd.setServerSocket(serverSocket);
+                        procTrd.setCrud(crud);
+                        procTrd.addComando(cmd);
                     }
                     
                     /* Comando que e para sair, exibir o menu novamente e 
                     listar ao cliente nao precisa ser processado*/
                     if(!co.contains("7") && !co.contains("6") && !co.contains("5") && !co.contains("4")){
-                        logTrd = new LogThread(cmd);
+                        logTrd.addComando(cmd);
                     }
                     
                     c.remove();
@@ -59,5 +61,41 @@ public class ConsumirThread implements Runnable {
                 break;
             }
         }
+    }
+
+    public Queue<String> getComandos() {
+        return comandos;
+    }
+
+    public void setComandos(Queue<String> comandos) {
+        this.comandos = comandos;
+    }
+    
+    public DatagramSocket getServerSocket() {
+        return serverSocket;
+    }
+
+    public void setServerSocket(DatagramSocket serverSocket) {
+        this.serverSocket = serverSocket;
+    }
+
+    public DatagramPacket getReceivePacket() {
+        return receivePacket;
+    }
+
+    public void setReceivePacket(DatagramPacket receivePacket) {
+        this.receivePacket = receivePacket;
+    }
+
+    public CRUD getCrud() {
+        return crud;
+    }
+
+    public void setCrud(CRUD crud) {
+        this.crud = crud;
+    }
+        
+    public void addComando(String comando){
+        comandos.add(comando);
     }
 }
