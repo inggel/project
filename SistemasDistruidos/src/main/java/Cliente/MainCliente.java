@@ -14,9 +14,9 @@ class MainCliente
        
         ComandosClienteThread cmdcli = new ComandosClienteThread(clientSocket);
         ExibeComandosThread exibCmd = new ExibeComandosThread(clientSocket);
-        ComandoRpcCliente cmdCliRpc = new ComandoRpcCliente("localhost", 1234);
+        //ComandoRpcCliente cmdCliRpc = new ComandoRpcCliente("localhost", 1235);
         
-        cmdCliRpc.sndComand();
+        //cmdCliRpc.sndComand();
         
         executor.execute(cmdcli);
         executor.execute(exibCmd);
