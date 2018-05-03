@@ -16,13 +16,13 @@ public class GrpcReceiverThread implements Runnable {
     private ConsumirThread conTrd;
     private Server server;
     
-    public GrpcReceiverThread(ConsumirThread conTrd){
+    public GrpcReceiverThread(ConsumirThread conTrd ){
         this.conTrd = conTrd;
     }
 
     @Override
     public void run() {
-        int port = 1234;
+        int port = 1235;
         
         try {
             server = ServerBuilder.forPort(port)
