@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ConsumirThread implements Runnable {
-    private Queue<String> comandos = new LinkedList<>();
+    private Queue<String> comandos = new LinkedList<String>();
     private ExecutorService executor;
     private DatagramSocket serverSocket;
     private DatagramPacket receivePacket;

@@ -17,7 +17,7 @@ import java.util.Set;
 public class MainServidor {
     public static void main(String args[]) throws Exception {
         // Lista com os comandos do log
-        List<String> inst = new ArrayList<>();
+        List<String> inst = new ArrayList<String>();
         // Arquivo de propriedade porta e ip
         Properties prop = UDPServer.getProp();
         // Propertie para o arquivo de log

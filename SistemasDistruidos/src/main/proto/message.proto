@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.SistemasDistruidos.message";
+option java_outer_classname = "Message";
+option objc_class_prefix = "MSG";
+
+package message;
+
+message ComandRequest {
+  string comm = 1;
+  repeated string hobbies = 2;
+}
+
+message ComandResponse {
+  string cmd = 1;
+}
+
+// Defining a Service, a Service can have multiple RPC operations
+service ComandService {
+  // Define a RPC operation
+  rpc cmd(ComandRequest) returns (ComandResponse);
+}

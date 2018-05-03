@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.Queue;
 
 public class LogThread implements Runnable {
-    private Queue<String> comandos = new LinkedList<>();
+    private Queue<String> comandos = new LinkedList<String>();
     int i=0;
             
     public LogThread(){

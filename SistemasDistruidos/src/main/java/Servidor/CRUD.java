@@ -9,7 +9,7 @@ import java.util.Properties;
 
 public class CRUD {
     
-    private Map<BigInteger, String> mapa = new HashMap<>();
+    private Map<BigInteger, String> mapa = new HashMap<BigInteger, String>();
     
     public boolean create(BigInteger chave, String valor){
         if((!mapa.containsKey(chave)) && (!valor.equals("")) && (!valor.equals(" ")) && valor != null){
@@ -58,7 +58,7 @@ public class CRUD {
     }*/
     
     public ArrayList<String> read(){
-        ArrayList<String> valores = new ArrayList<>();
+        ArrayList<String> valores = new ArrayList<String>();
         for(BigInteger bi : getMapa().keySet()){
             valores.add(getMapa().get(bi));
         }

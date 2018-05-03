@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Queue;
 
 public class ProcessaThread implements Runnable{
-    private Queue<String> comandos = new LinkedList<>();
+    private Queue<String> comandos = new LinkedList<String>();
     private DatagramPacket receivePacket;
     private DatagramSocket serverSocket;
     private String busca;
-    private ArrayList<String> lista =  new ArrayList<>();
+    private ArrayList<String> lista =  new ArrayList<String>();
     private boolean cria, deleta, atualiza;
     private CRUD crud;
-    private List<String> inst = new ArrayList<>();
+    private List<String> inst = new ArrayList<String>();
 
     public ProcessaThread(){
         // ctor

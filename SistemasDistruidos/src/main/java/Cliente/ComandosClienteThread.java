@@ -41,7 +41,7 @@ public class ComandosClienteThread implements Runnable {
                 
                 if(!comando.equals("6")){
                     ProcessaThread threadServidor = new ProcessaThread();
-                    List<String> comandosCliente = new ArrayList<>();
+                    List<String> comandosCliente = new ArrayList<String>();
                     String verificaChave="";
                     String verificaValor="";
 
