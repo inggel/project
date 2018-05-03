@@ -21,30 +21,31 @@ public class RecebeThread implements Runnable{
     }
     
     @Override
-    public void run() {        
-        //while(true){
+    public void run() {
+        //executor.execute(grpcRcv);
+        
+        while(true){
             try{
-//                byte[] receiveData = new byte[1401];
-//                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-//                
-//                serverSocket.receive(receivePacket);
-//                String comando="";
-//                comando = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                byte[] receiveData = new byte[1401];
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                
+                serverSocket.receive(receivePacket);
+                String comando="";
+                comando = new String(receivePacket.getData(), 0, receivePacket.getLength());
                
                 // Cria thread de consumir da fila e enviar para log e processador do comando.
-//                if(!comando.isEmpty() && !(comando.equalsIgnoreCase(""))){
-//                    conTrd.setReceivePacket(receivePacket);
-//                    conTrd.setServerSocket(serverSocket);
-//                    conTrd.setCrud(crud);
-//                    conTrd.addComando(comando);
+                if(!comando.isEmpty() && !(comando.equalsIgnoreCase(""))){
+                    conTrd.setReceivePacket(receivePacket);
+                    conTrd.setServerSocket(serverSocket);
+                    conTrd.setCrud(crud);
+                    conTrd.addComando(comando);
                     
-                    //executor.execute(conTrd);
-                    executor.execute(grpcRcv);
-//                }
+                    executor.execute(conTrd);
+                }
                                 
             }catch(Exception e){
                 e.printStackTrace();
             }
-        //}
+        }
     }    
 }
