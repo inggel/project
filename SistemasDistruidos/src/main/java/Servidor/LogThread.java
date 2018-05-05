@@ -2,12 +2,12 @@ package Servidor;
 
 import java.io.FileOutputStream;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Properties;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class LogThread implements Runnable {
-    private Queue<String> comandos = new LinkedList<String>();
+    private BlockingQueue<String> comandos = new LinkedBlockingQueue<String>();
     int i=0;
             
     public LogThread(){
@@ -44,9 +44,6 @@ public class LogThread implements Runnable {
                 } catch(Exception ex){
                     ex.printStackTrace();
                 }
-                
-               
-                break;
             }
         }
     }

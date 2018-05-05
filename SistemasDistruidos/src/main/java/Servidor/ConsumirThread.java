@@ -3,24 +3,20 @@ package Servidor;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class ConsumirThread implements Runnable {
-    private Queue<String> comandos = new LinkedList<String>();
-    private ExecutorService executor;
+    private BlockingQueue<String> comandos = new LinkedBlockingQueue<String>();
     private DatagramSocket serverSocket;
     private DatagramPacket receivePacket;
     private CRUD crud;
-    LogThread logTrd;
-    ProcessaThread procTrd;
+    private LogThread logTrd;
+    private ProcessaThread procTrd;
     
-    public ConsumirThread(){
-        this.executor = Executors.newCachedThreadPool();
-        logTrd = new LogThread();
-        procTrd  = new ProcessaThread();
+    public ConsumirThread(LogThread logTrd, ProcessaThread procTrd){
+        this.logTrd = logTrd;
+        this.procTrd = procTrd;
     }
         
     @Override
@@ -35,7 +31,7 @@ public class ConsumirThread implements Runnable {
                     String co = "" + cmd.charAt(0);
                     
                     // Comando que e para exibir o menu novamente ao cliente nao precisa ser processado
-                    if(!co.contains("6")){
+                    if(!co.equalsIgnoreCase("6")){
                         procTrd.setReceivePacket(receivePacket);
                         procTrd.setServerSocket(serverSocket);
                         procTrd.setCrud(crud);
@@ -44,31 +40,13 @@ public class ConsumirThread implements Runnable {
                     
                     /* Comando que e para sair, exibir o menu novamente e 
                     listar ao cliente nao precisa ser processado*/
-                    if(!co.contains("7") && !co.contains("6") && !co.contains("5") && !co.contains("4")){
+                    if(!co.equalsIgnoreCase("7") && !co.equalsIgnoreCase("6") && !co.equalsIgnoreCase("5") && !co.equalsIgnoreCase("4")){
                         logTrd.addComando(cmd);
                     }
-                    
                     c.remove();
-                    
-                    if(procTrd != null){
-                        this.executor.execute(procTrd);
-                    }
-                    
-                    if(logTrd != null){
-                        this.executor.execute(logTrd);
-                    }
                 }
-                break;
             }
         }
-    }
-
-    public Queue<String> getComandos() {
-        return comandos;
-    }
-
-    public void setComandos(Queue<String> comandos) {
-        this.comandos = comandos;
     }
     
     public DatagramSocket getServerSocket() {
@@ -96,6 +74,14 @@ public class ConsumirThread implements Runnable {
     }
         
     public void addComando(String comando){
-        comandos.add(comando);
+        getComandos().add(comando);
+    }
+    
+    public BlockingQueue<String> getComandos() {
+        return comandos;
+    }
+    
+    public void setComandos(BlockingQueue<String> comandos) {
+        this.comandos = comandos;
     }
 }

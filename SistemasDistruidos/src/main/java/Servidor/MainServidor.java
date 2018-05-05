@@ -54,8 +54,18 @@ public class MainServidor {
             }
             // Inicia thread para receber comandos dos clientes
             System.out.println("Servidor iniciado!");
-            rcvTrd = new RecebeThread(serverSocket, crud);
+            
+            LogThread logTrd = new LogThread();
+            ProcessaThread procTrd  = new ProcessaThread();
+            ConsumirThread conTrd = new ConsumirThread(logTrd, procTrd);
+            rcvTrd = new RecebeThread(conTrd, serverSocket, crud);
+            GrpcReceiverThread grpcRcv = new GrpcReceiverThread(conTrd, crud);
+                        
+            //executor.execute(grpcRcv);
             executor.execute(rcvTrd);
+            executor.execute(conTrd);
+            executor.execute(logTrd);
+            executor.execute(procTrd);
 
             executor.shutdown();
             while (!executor.awaitTermination(24L, TimeUnit.HOURS)) {

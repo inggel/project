@@ -9,7 +9,6 @@ package message;
 
 message ComandRequest {
   string comm = 1;
-  repeated string hobbies = 2;
 }
 
 message ComandResponse {

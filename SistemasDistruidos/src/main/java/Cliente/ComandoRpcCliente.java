@@ -8,7 +8,7 @@ import io.grpc.SistemasDistruidos.message.ComandServiceGrpc;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-public class ComandoRpcCliente {
+public class ComandoRpcCliente implements Runnable {
     private final ManagedChannel channel;
     private final ComandServiceGrpc.ComandServiceBlockingStub blockingStub;
     
@@ -26,33 +26,7 @@ public class ComandoRpcCliente {
     public void shutdown() throws InterruptedException {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
     }
-    
-    public void sndComand() {
-        String name = "";
-        Scanner sc = new Scanner(System.in);
-        menu();
-
-        while(!name.equalsIgnoreCase("7")){
-            name = sc.nextLine();
-
-            if(name.equalsIgnoreCase("6")){
-                menu();
-                continue;
-            }
-
-            ComandRequest request = ComandRequest.newBuilder().setComm(name).build();
-            ComandResponse response;
-
-            try {
-              response = blockingStub.cmd(request);
-            } catch (Exception e) {
-                System.out.println("Erro: " + e.getMessage());
-              return;
-            }
-            System.out.println("sv: " + response.getCmd());
-        }
-    }
-    
+        
     public static void menu(){
         System.out.println("---- Sistemas Distruibuidos ----");
         System.out.println("Escolha uma das opções abaixo ");
@@ -64,5 +38,35 @@ public class ComandoRpcCliente {
         System.out.println("6. Visualizar menu");
         System.out.println("7. Sair");
         System.out.print("Digite a opção:  ");
+    }
+
+    public void run() {
+        String name = "";
+        Scanner sc = new Scanner(System.in);
+        menu();
+
+        while(!name.equalsIgnoreCase("7")){
+            name = sc.nextLine();
+            
+            if(name.equalsIgnoreCase("6")){
+                menu();
+                continue;
+            }
+            
+            if(name.equalsIgnoreCase("7")){
+                System.out.println("Encerrando!");
+            }
+            
+            ComandRequest request = ComandRequest.newBuilder().setComm(name).build();
+            ComandResponse response;
+
+            try {
+              response = blockingStub.cmd(request);
+            } catch (Exception e) {
+                System.out.println("Erro: " + e.getMessage());
+              return;
+            }
+            System.out.println("sv: " + response.getCmd());
+        }
     }
 }

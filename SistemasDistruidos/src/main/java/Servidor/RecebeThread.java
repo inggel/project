@@ -2,30 +2,23 @@ package Servidor;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class RecebeThread implements Runnable{
     private DatagramSocket serverSocket;
-    private ExecutorService executor;
     private CRUD crud;
     private ConsumirThread conTrd;
-    private GrpcReceiverThread grpcRcv;
     
-    public RecebeThread(DatagramSocket serverSocket, CRUD crud){
+    public RecebeThread(ConsumirThread conTrd, DatagramSocket serverSocket, CRUD crud){
         this.serverSocket = serverSocket;
-        this.executor = Executors.newCachedThreadPool();
         this.crud = crud;
-        conTrd = new ConsumirThread();
-        grpcRcv = new GrpcReceiverThread(conTrd);
+        this.conTrd = conTrd;
     }
     
     @Override
-    public void run() {
-        //executor.execute(grpcRcv);
-        
+    public void run() {        
         while(true){
             try{
+                
                 byte[] receiveData = new byte[1401];
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 
@@ -40,7 +33,6 @@ public class RecebeThread implements Runnable{
                     conTrd.setCrud(crud);
                     conTrd.addComando(comando);
                     
-                    executor.execute(conTrd);
                 }
                                 
             }catch(Exception e){
