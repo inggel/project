@@ -1,5 +1,6 @@
 package Servidor;
 
+import io.grpc.SistemasDistruidos.message.ComandResponse;
 import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -19,6 +20,7 @@ public class ProcessaThread implements Runnable{
     private boolean cria, deleta, atualiza;
     private CRUD crud;
     private List<String> inst = new ArrayList<String>();
+    private io.grpc.stub.StreamObserver<ComandResponse> responseObserverGrpc;
 
     public ProcessaThread(){
         // ctor
@@ -29,28 +31,29 @@ public class ProcessaThread implements Runnable{
         byte[] sendData = new byte[1401];
         String dados="";
         
-        try{
-            Iterator<String> cmd = comandos.iterator();
+        while(true){
             
-            while(true){
-                if(!cmd.hasNext()){
-                    continue;
-                }else{
+            try{
+                Iterator<String> cmd = comandos.iterator();
+
+                while(cmd.hasNext()){
                     String c = cmd.next();
                     sendData = c.getBytes();
 
                     /* Caso o comando do cliente seja 7 envia para o cliente 7 para encerrar */
                     if((""+c.charAt(0)).contains("7")){
-                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
-                        getServerSocket().send(sendPacket);
+                        if(receivePacket != null){
+                            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
+                            getServerSocket().send(sendPacket);
+                        }
                     } else {
 
                         inst = Arrays.asList(c.split(" ")); 
 
-                        switch(inst.get(0).replaceAll("\u0000", "").replaceAll("\\u0000", "").charAt(0)){
+                        switch(inst.get(0).replaceAll("\\u0000", "").charAt(0)){
                             /* Criar um dado no map */
                             case '1':
-                                cria = getCrud().create(new BigInteger(inst.get(1).replaceAll("\u0000", "").
+                                cria = getCrud().create(new BigInteger(inst.get(1).
                                         replaceAll("\\u0000", "")), valor(inst));
                                 if(cria)
                                     dados = "Criado com sucesso!\n";
@@ -60,7 +63,7 @@ public class ProcessaThread implements Runnable{
 
                             /* Deletar um dado no map */
                             case '2':
-                                deleta = getCrud().delete(new BigInteger(inst.get(1).replaceAll("\u0000", "").
+                                deleta = getCrud().delete(new BigInteger(inst.get(1).
                                         replaceAll("\\u0000", "")));
                                 if(deleta)
                                     dados = "Deletado com sucesso!\n";
@@ -70,7 +73,7 @@ public class ProcessaThread implements Runnable{
 
                             /* Atualizar um dado no map */
                             case '3':
-                                atualiza = getCrud().update(new BigInteger(inst.get(1).replaceAll("\u0000", "").
+                                atualiza = getCrud().update(new BigInteger(inst.get(1).
                                         replaceAll("\\u0000", "")), valor(inst));
                                  if(atualiza)
                                     dados = "Atualizado com sucesso!\n";
@@ -80,7 +83,7 @@ public class ProcessaThread implements Runnable{
 
                             /* Busca um dado no map */
                             case '4':
-                                busca = getCrud().search(new BigInteger(inst.get(1).replaceAll("\u0000", "").replaceAll("\\u0000", "")));
+                                busca = getCrud().search(new BigInteger(inst.get(1).replaceAll("\\u0000", "")));
                                  if(busca != null && !busca.isEmpty())
                                     dados = busca+"\n";
                                  else
@@ -100,18 +103,24 @@ public class ProcessaThread implements Runnable{
                                 break;
                         }
 
-                        sendData = dados.getBytes();
-                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
-                        getServerSocket().send(sendPacket);
+                        if(receivePacket != null){
+                            sendData = dados.getBytes();
+                            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
+                            getServerSocket().send(sendPacket);
+                        }
+                                                
+                        ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados).build();
+                        this.responseObserverGrpc.onNext(rspGrpc);
+                        this.responseObserverGrpc.onCompleted();
                     }
 
                     cmd.remove();
                 }
-            }
-        } catch(Exception e){
-            e.printStackTrace();
-            e.getMessage();
-        }   
+            } catch(Exception e){
+                e.printStackTrace();
+                e.getMessage();
+            }   
+        }
     }
     
     /* Substitui os lixos tragos junto com os dados e concatena as strings passadas*/
@@ -122,21 +131,21 @@ public class ProcessaThread implements Runnable{
             valor += inst.get(i)+" ";
         }
         
-        return valor.replaceAll("\u0000", "").replaceAll("\\u0000", "");
+        return valor.replaceAll("\\u0000", "");
     }
     
     /* Metodo utilizado pelo log para carregar os dados no map de dados */
     public CRUD processaComando(List<String> inst, CRUD crud){
         String dados = "";
-        String c = inst.get(1).replaceAll("\u0000", "")
+        String c = inst.get(1)
                         .replaceAll("\\u0000", "")
                         .replaceAll("\\]","");
         
         inst = Arrays.asList(c.split(" "));
         
-        switch(inst.get(0).replaceAll("\u0000", "").replaceAll("\\u0000", "").charAt(0)){
+        switch(inst.get(0).replaceAll("\\u0000", "").charAt(0)){
             case '1':
-                cria = crud.create(new BigInteger(inst.get(1).replaceAll("\u0000", "")
+                cria = crud.create(new BigInteger(inst.get(1)
                         .replaceAll("\\u0000", "")
                         .replaceAll("\\]","")), valor(inst));
                 if(cria)
@@ -146,7 +155,7 @@ public class ProcessaThread implements Runnable{
                 break;
 
             case '2':
-                deleta = crud.delete(new BigInteger(inst.get(1).replaceAll("\u0000", "")
+                deleta = crud.delete(new BigInteger(inst.get(1)
                         .replaceAll("\\u0000", "")
                         .replaceAll("\\]","")));
                 if(deleta)
@@ -156,7 +165,7 @@ public class ProcessaThread implements Runnable{
                 break;
 
             case '3':
-                atualiza = crud.update(new BigInteger(inst.get(1).replaceAll("\u0000", "")
+                atualiza = crud.update(new BigInteger(inst.get(1)
                         .replaceAll("\\u0000", "")
                         .replaceAll("\\]","")), valor(inst));
                  if(atualiza)
@@ -196,6 +205,14 @@ public class ProcessaThread implements Runnable{
 
     public void setCrud(CRUD crud) {
         this.crud = crud;
+    }
+
+    public io.grpc.stub.StreamObserver<ComandResponse> getResponseObserverGrpc() {
+        return responseObserverGrpc;
+    }
+
+    public void setResponseObserverGrpc(io.grpc.stub.StreamObserver<ComandResponse> responseObserverGrpc) {
+        this.responseObserverGrpc = responseObserverGrpc;
     }
     
 }
