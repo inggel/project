@@ -55,6 +55,11 @@ public class ComandoRpcCliente implements Runnable {
             
             if(name.equalsIgnoreCase("7")){
                 System.out.println("Encerrando!");
+                try {
+                    this.shutdown();
+                } catch (InterruptedException ex) {
+                    System.out.println("Erro ao encerrar o cli: " + ex);
+                }
             }
             
             ComandRequest request = ComandRequest.newBuilder().setComm(name).build();
@@ -66,7 +71,8 @@ public class ComandoRpcCliente implements Runnable {
                 System.out.println("Erro: " + e.getMessage());
               return;
             }
-            System.out.println("sv: " + response.getCmd());
+            System.out.println("Grpc: " + response.getCmd());
+            System.out.print("Digite a opção: ");
         }
     }
 }

@@ -18,11 +18,13 @@ public class GrpcReceiverThread implements Runnable {
     private Server server;
     private ExecutorService executor;
     private CRUD crud;
+    private ProcessaThread procTrd;
     
-    public GrpcReceiverThread(ConsumirThread conTrd, CRUD crud){
+    public GrpcReceiverThread(ConsumirThread conTrd, CRUD crud, ProcessaThread procTrd){
         this.conTrd = conTrd;
         this.crud = crud;
         this.executor = Executors.newCachedThreadPool();
+        this.procTrd = procTrd;
     }
 
     @Override
@@ -62,14 +64,10 @@ public class GrpcReceiverThread implements Runnable {
         @Override
         public void cmd(ComandRequest request,
         io.grpc.stub.StreamObserver<ComandResponse> responseObserver){
-            ComandResponse rsp = ComandResponse.newBuilder().setCmd("Grpc> ").build();
-            
             conTrd.addComando(request.getComm());
             conTrd.setCrud(crud);
-            executor.execute(conTrd);
-                                
-            responseObserver.onNext(rsp);
-            responseObserver.onCompleted();
+            
+            procTrd.setResponseObserverGrpc(responseObserver);
         }
     }
 }
