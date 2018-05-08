@@ -63,14 +63,6 @@ public class GrpcReceiverThread implements Runnable {
     
     class ComandServiceImpl extends ComandServiceGrpc.ComandServiceImplBase {
         
-//        @Override
-//        public void cmd(ComandRequest request,
-//        io.grpc.stub.StreamObserver<ComandResponse> responseObserver){
-//            conTrd.addComando(request.getComm());
-//            conTrd.setCrud(crud);
-//            
-//            procTrd.setResponseObserverGrpc(responseObserver);
-//        }
         @Override
         public StreamObserver<ComandRequest> cmd(final StreamObserver<ComandResponse> responseObserver) {
             final ServerCallStreamObserver<ComandResponse> serverCallStreamObserver =
