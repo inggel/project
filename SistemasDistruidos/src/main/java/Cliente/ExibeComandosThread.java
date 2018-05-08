@@ -27,7 +27,6 @@ public class ExibeComandosThread implements Runnable {
                     System.out.println("Encerrando!");
                     break;
                 }
-                    
                 
                 if(!modifiedSentence.isEmpty()){
                     System.out.println("sv:> " + modifiedSentence);

@@ -17,6 +17,6 @@ message ComandResponse {
 
 // Defining a Service, a Service can have multiple RPC operations
 service ComandService {
-  // Define a RPC operation
-  rpc cmd(ComandRequest) returns (ComandResponse);
+  // Define a RPC operation Bidirectional streaming RPCs
+  rpc cmd(stream ComandRequest) returns (stream ComandResponse);
 }

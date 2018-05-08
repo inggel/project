@@ -88,7 +88,8 @@ public class ComandosClienteThread implements Runnable {
         System.out.println("4. Buscar <chave>");
         System.out.println("5. Listar");
         System.out.println("6. Visualizar menu");
-        System.out.println("7. Sair");
+        System.out.println("7. Monitorar chave");
+        System.out.println("8. Sair");
         System.out.print("Digite a opção:  ");
     }
 }
