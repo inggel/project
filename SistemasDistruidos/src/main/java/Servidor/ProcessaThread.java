@@ -21,6 +21,7 @@ public class ProcessaThread implements Runnable{
     private CRUD crud;
     private List<String> inst = new ArrayList<String>();
     private io.grpc.stub.StreamObserver<ComandResponse> responseObserverGrpc;
+    private String monChave;
 
     public ProcessaThread(){
         // ctor
@@ -41,7 +42,7 @@ public class ProcessaThread implements Runnable{
                     sendData = c.getBytes();
 
                     /* Caso o comando do cliente seja 7 envia para o cliente 7 para encerrar */
-                    if((""+c.charAt(0)).contains("7")){
+                    if((""+c.charAt(0)).contains("8")){
                         if(receivePacket != null){
                             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
                             getServerSocket().send(sendPacket);
@@ -98,6 +99,10 @@ public class ProcessaThread implements Runnable{
                                  else
                                      dados = "Não há registro de dados\n";
                                 break;
+                                
+                            case '7':
+                                monChave = inst.get(1);
+                                break;
 
                             default:
                                 break;
@@ -108,10 +113,15 @@ public class ProcessaThread implements Runnable{
                             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
                             getServerSocket().send(sendPacket);
                         }
-                                                
-                        ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados).build();
-                        this.responseObserverGrpc.onNext(rspGrpc);
-                        this.responseObserverGrpc.onCompleted();
+                                         
+                        if(responseObserverGrpc != null && !inst.get(0).equalsIgnoreCase("5") && !inst.get(0).equalsIgnoreCase("7")){
+                            if(monChave.equalsIgnoreCase(inst.get(1))){
+                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " " + inst).build();
+                                this.responseObserverGrpc.onNext(rspGrpc);
+
+                                this.responseObserverGrpc.onCompleted();
+                            }
+                        }
                     }
 
                     cmd.remove();

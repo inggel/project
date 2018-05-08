@@ -40,7 +40,7 @@ public class ConsumirThread implements Runnable {
                     
                     /* Comando que e para sair, exibir o menu novamente e 
                     listar ao cliente nao precisa ser processado*/
-                    if(!co.equalsIgnoreCase("7") && !co.equalsIgnoreCase("6") && !co.equalsIgnoreCase("5") && !co.equalsIgnoreCase("4")){
+                    if(!co.equalsIgnoreCase("8") && !co.equalsIgnoreCase("6") && !co.equalsIgnoreCase("5") && !co.equalsIgnoreCase("4")){
                         logTrd.addComando(cmd);
                     }
                     c.remove();
