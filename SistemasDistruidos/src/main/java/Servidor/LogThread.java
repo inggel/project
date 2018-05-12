@@ -8,7 +8,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class LogThread implements Runnable {
     private BlockingQueue<String> comandos = new LinkedBlockingQueue<String>();
-    int i=0;
             
     public LogThread(){
         // ctor
@@ -34,7 +33,6 @@ public class LogThread implements Runnable {
                                 .replaceAll("\u0000", "") /* removes NUL chars */
                                 .replaceAll("\\u0000", "") /* removes backslash+u0000 */);
 
-                        //System.out.println("log: "+comandos.toString());
                         prop.store(fileout, "Log dos comandos enviados pelo cliente");
                         fileout.flush();
                         
