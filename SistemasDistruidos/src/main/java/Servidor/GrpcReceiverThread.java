@@ -1,12 +1,16 @@
 package Servidor;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import io.grpc.SistemasDistruidos.message.ComandServiceGrpc;
 import io.grpc.SistemasDistruidos.message.ComandResponse;
 import io.grpc.SistemasDistruidos.message.ComandRequest;
 import io.grpc.ServerBuilder;
 import io.grpc.Server;
+import io.grpc.netty.NettyServerBuilder;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
+import java.net.InetSocketAddress;
+import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,10 +36,14 @@ public class GrpcReceiverThread implements Runnable {
 
     @Override
     public void run() {
-        int port = 1235;
-        
+        String porta="";
+        String ip = "";
         try {
-            server = ServerBuilder.forPort(port)
+            Properties prop = UDPServer.getProp();
+            porta = prop.getProperty("prop.server.GRPCport");
+            ip = prop.getProperty("prop.server.GRPChost");
+            
+            server = ServerBuilder.forPort(Integer.parseInt(porta))
                 .addService(new ComandServiceImpl())
                 .build()
                 .start();
@@ -43,7 +51,7 @@ public class GrpcReceiverThread implements Runnable {
             Logger.getLogger(GrpcReceiverThread.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        System.out.println("Server started, listening on " + port);
+        System.out.println("Server started, listening on " + porta);
         
         Runtime.getRuntime().addShutdownHook(new Thread() {
           @Override
@@ -62,16 +70,7 @@ public class GrpcReceiverThread implements Runnable {
     }
     
     class ComandServiceImpl extends ComandServiceGrpc.ComandServiceImplBase {
-        
-//        @Override
-//        public void cmd(ComandRequest request,
-//        io.grpc.stub.StreamObserver<ComandResponse> responseObserver){
-//            conTrd.addComando(request.getComm());
-//            conTrd.setCrud(crud);
-//            
-//            procTrd.setResponseObserverGrpc(responseObserver);
-//        }
-        @Override
+      
         public StreamObserver<ComandRequest> cmd(final StreamObserver<ComandResponse> responseObserver) {
             final ServerCallStreamObserver<ComandResponse> serverCallStreamObserver =
                 (ServerCallStreamObserver<ComandResponse>) responseObserver;
