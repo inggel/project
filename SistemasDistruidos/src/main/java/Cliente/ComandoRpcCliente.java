@@ -8,18 +8,21 @@ import io.grpc.SistemasDistruidos.message.ComandResponse;
 import io.grpc.SistemasDistruidos.message.ComandServiceGrpc;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ComandoRpcCliente implements Runnable {
+    private static final Logger logger =
+        Logger.getLogger(ComandoRpcCliente.class.getName());
+
     final CountDownLatch done = new CountDownLatch(1);
     ManagedChannel channel;
-    String name="";
-    Scanner sc = new Scanner(System.in);
-    
+    String comando = "5";
     public static void menu(){
         System.out.println("---- Sistemas Distruibuidos ----");
         System.out.println("Escolha uma das opções abaixo ");
@@ -40,24 +43,32 @@ public class ComandoRpcCliente implements Runnable {
             String porta = prop.getProperty("prop.server.GRPCport");
             String ip = prop.getProperty("prop.server.GRPChost");
             channel = ManagedChannelBuilder
-            .forAddress(ip, Integer.parseInt(porta))
-            .usePlaintext()
-            .build();
-            
+                .forAddress(ip, Integer.parseInt(porta))
+                .usePlaintext()
+                .build();
         } catch(Exception e){
             e.printStackTrace();
         }
-        
+        menu();
         while(true){
-            menu();
-            name = sc.nextLine();
-        
         ComandServiceGrpc.ComandServiceStub stub = ComandServiceGrpc.newStub(channel);
+        
+        BufferedReader streamReader = new BufferedReader(new InputStreamReader(System.in));
+            try {
+                comando = streamReader.readLine();
+                if(comando.charAt(0) == '6'){
+                    menu();
+                    continue;
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ComandoRpcCliente.class.getName()).log(Level.SEVERE, null, ex);
+            }
         
         ClientResponseObserver<ComandRequest, ComandResponse> clientResponseObserver =
             new ClientResponseObserver<ComandRequest, ComandResponse>() {
 
             ClientCallStreamObserver<ComandRequest> requestStream;
+           
 
             @Override
             public void beforeStart(final ClientCallStreamObserver<ComandRequest> requestStream) {
@@ -68,35 +79,24 @@ public class ComandoRpcCliente implements Runnable {
                     
                     @Override
                     public void run() {
-                         // Start generating values from where we left off on a non-gRPC thread.
-                        if(name != ""){
-                            while(requestStream.isReady()){
-                                // Send more messages if there are more messages to send.
-                                
-                                if(name.charAt(0) == '6'){
-                                    menu();
-                                    name = sc.nextLine();
-                                    continue;
+                        while(requestStream.isReady()){
+                            if(comando.charAt(0) == '8'){
+                                System.out.println("Encerrando!");
+                                try {
+                                    channel.shutdown();
+                                } catch (Exception ex) {
+                                    System.out.println("Erro ao encerrar o cli: " + ex);
                                 }
-
-                                if(name.equalsIgnoreCase("8")){
-                                    System.out.println("Encerrando!");
-                                    try {
-                                        channel.shutdown();
-                                    } catch (Exception ex) {
-                                        System.out.println("Erro ao encerrar o cli: " + ex);
-                                    }
-                                }
-                                
+                            }
+                            
+                            ComandRequest request = ComandRequest.newBuilder().setComm(comando).build();
+                            requestStream.onNext(request);
                             try {
-                                ComandRequest request = ComandRequest.newBuilder().setComm(name).build();
-                                requestStream.onNext(request);
-                                done.await();
-                                requestStream.onCompleted();
+                                Thread.sleep(100);
                             } catch (InterruptedException ex) {
-                            Logger.getLogger(ComandoRpcCliente.class.getName()).log(Level.SEVERE, null, ex);
-        }   
-            }
+                                Logger.getLogger(ComandoRpcCliente.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            requestStream.onCompleted();
                         }
                     }
                 });
@@ -111,22 +111,17 @@ public class ComandoRpcCliente implements Runnable {
             @Override
             public void onError(Throwable thrwbl) {
                 thrwbl.printStackTrace();
+                done.countDown();
             }
 
             @Override
             public void onCompleted() {
                 System.out.println("Feito");
+                done.countDown();
             }
         };
         
-       stub.cmd(clientResponseObserver);
-
-        /*try {
-            done.await();
-            channel.shutdown();
-            channel.awaitTermination(24L, TimeUnit.HOURS);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ComandoRpcCliente.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-    }}
+        stub.cmd(clientResponseObserver);
+        }     
+    }
 }

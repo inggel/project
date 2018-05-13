@@ -21,7 +21,7 @@ public class ProcessaThread implements Runnable{
     private CRUD crud;
     private List<String> inst = new ArrayList<String>();
     private io.grpc.stub.StreamObserver<ComandResponse> responseObserverGrpc;
-    private String monChave;
+    private String monChave = "";
 
     public ProcessaThread(){
         // ctor
@@ -102,7 +102,6 @@ public class ProcessaThread implements Runnable{
                                 
                             case '7':
                                 monChave = inst.get(1);
-                                dados = "Chave " + monChave +" monitorada\n";
                                 break;
 
                             default:
@@ -115,17 +114,18 @@ public class ProcessaThread implements Runnable{
                             getServerSocket().send(sendPacket);
                         }
                                          
-                        if(responseObserverGrpc != null && !inst.get(0).equalsIgnoreCase("5") && monChave != null){
+                        if(responseObserverGrpc != null && !inst.get(0).equalsIgnoreCase("5") && !inst.get(0).equalsIgnoreCase("7") && !monChave.equalsIgnoreCase("")){
                             if(monChave.equalsIgnoreCase(inst.get(1))){
-                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " " + inst).build();
+                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd("Ow a chave foi alterada cara: " + dados + " " + inst).build();
                                 this.responseObserverGrpc.onNext(rspGrpc);
-                                this.responseObserverGrpc.onCompleted();
                             }
-                        } else{
+                        }else{
                             if(responseObserverGrpc != null){
+                                if(inst.get(0).equalsIgnoreCase("7")){
+                                    dados = "Monitorando";
+                                }
                                 ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " " + inst).build();
                                 this.responseObserverGrpc.onNext(rspGrpc);
-                                this.responseObserverGrpc.onCompleted();
                             }
                         }
                     }
