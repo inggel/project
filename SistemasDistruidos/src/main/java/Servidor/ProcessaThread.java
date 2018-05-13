@@ -112,19 +112,30 @@ public class ProcessaThread implements Runnable{
                             sendData = dados.getBytes();
                             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
                             getServerSocket().send(sendPacket);
+                             cmd.remove();
+                            if(inst.get(0).equalsIgnoreCase("7") && responseObserverGrpc != null){
+                                dados = "Monitorando\n";
+                                try{
+                                    ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd("Ow callback da chave cara - " +dados + "Comandos: " + inst).build();
+                                    this.responseObserverGrpc.onNext(rspGrpc);
+                                } catch(Exception e){
+                                    System.out.println("Sucesso!");
+                                }
+                            }
+                            break;
                         }
                                          
                         if(responseObserverGrpc != null && !inst.get(0).equalsIgnoreCase("5") && !inst.get(0).equalsIgnoreCase("7") && !monChave.equalsIgnoreCase("")){
                             if(monChave.equalsIgnoreCase(inst.get(1))){
-                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd("Ow a chave foi alterada cara: " + dados + " " + inst).build();
+                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd("Ow callback da chave cara - " + dados + "Comandos: " + inst +"\n").build();
                                 this.responseObserverGrpc.onNext(rspGrpc);
                             }
                         }else{
                             if(responseObserverGrpc != null){
                                 if(inst.get(0).equalsIgnoreCase("7")){
-                                    dados = "Monitorando";
+                                    dados = "Monitorando\n";
                                 }
-                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " " + inst).build();
+                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " ").build();
                                 this.responseObserverGrpc.onNext(rspGrpc);
                             }
                         }

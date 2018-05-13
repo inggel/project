@@ -87,6 +87,7 @@ public class ComandoRpcCliente implements Runnable {
                                 } catch (Exception ex) {
                                     System.out.println("Erro ao encerrar o cli: " + ex);
                                 }
+                                break;
                             }
                             
                             ComandRequest request = ComandRequest.newBuilder().setComm(comando).build();
@@ -97,15 +98,18 @@ public class ComandoRpcCliente implements Runnable {
                                 Logger.getLogger(ComandoRpcCliente.class.getName()).log(Level.SEVERE, null, ex);
                             }
                             requestStream.onCompleted();
+                           
                         }
+                        
                     }
                 });
             }
 
             @Override
             public void onNext(ComandResponse v) {
-                System.out.println("<-- " + v.getCmd());
+                System.out.println("GRPC: " + v.getCmd());
                 requestStream.request(1);
+                System.out.print("Digite a opção: ");
             }
 
             @Override
@@ -116,7 +120,7 @@ public class ComandoRpcCliente implements Runnable {
 
             @Override
             public void onCompleted() {
-                System.out.println("Feito");
+                //System.out.println("Feito");
                 done.countDown();
             }
         };
