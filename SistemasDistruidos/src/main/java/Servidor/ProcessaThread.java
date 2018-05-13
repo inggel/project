@@ -102,6 +102,7 @@ public class ProcessaThread implements Runnable{
                                 
                             case '7':
                                 monChave = inst.get(1);
+                                dados = "Chave " + monChave +" monitorada\n";
                                 break;
 
                             default:
@@ -114,11 +115,16 @@ public class ProcessaThread implements Runnable{
                             getServerSocket().send(sendPacket);
                         }
                                          
-                        if(responseObserverGrpc != null && !inst.get(0).equalsIgnoreCase("5") && !inst.get(0).equalsIgnoreCase("7")){
+                        if(responseObserverGrpc != null && !inst.get(0).equalsIgnoreCase("5") && monChave != null){
                             if(monChave.equalsIgnoreCase(inst.get(1))){
                                 ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " " + inst).build();
                                 this.responseObserverGrpc.onNext(rspGrpc);
-
+                                this.responseObserverGrpc.onCompleted();
+                            }
+                        } else{
+                            if(responseObserverGrpc != null){
+                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " " + inst).build();
+                                this.responseObserverGrpc.onNext(rspGrpc);
                                 this.responseObserverGrpc.onCompleted();
                             }
                         }

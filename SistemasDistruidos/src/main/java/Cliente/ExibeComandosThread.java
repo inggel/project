@@ -23,7 +23,7 @@ public class ExibeComandosThread implements Runnable {
                 String modifiedSentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
                 String co = ""+modifiedSentence.charAt(0);
                 
-                if(co.contains("7")){
+                if(co.contains("8")){
                     System.out.println("Encerrando!");
                     break;
                 }

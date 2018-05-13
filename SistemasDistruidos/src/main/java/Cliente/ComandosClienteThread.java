@@ -26,7 +26,7 @@ public class ComandosClienteThread implements Runnable {
     public void run() {
         comando = "";
         menu();
-        while(!comando.equalsIgnoreCase("7")){
+        while(!comando.equalsIgnoreCase("8")){
             try{
                 BufferedReader streamReader = new BufferedReader(new InputStreamReader(System.in));
                 byte[] sendData = new byte[1401];
@@ -46,9 +46,9 @@ public class ComandosClienteThread implements Runnable {
                     String verificaValor="";
 
                     comandosCliente = Arrays.asList(comando.split(" "));
-                    if(!comando.equals("5") && !comando.equals("7"))
+                    if(!comando.equals("5") && !comando.equals("8"))
                         verificaChave = comandosCliente.get(1);
-                    if(comando.equals("5") || comando.equals("7"))
+                    if(comando.equals("5") || comando.equals("8"))
                         verificaChave = comando;
                     
                     verificaValor = threadServidor.valor(comandosCliente);
@@ -88,7 +88,7 @@ public class ComandosClienteThread implements Runnable {
         System.out.println("4. Buscar <chave>");
         System.out.println("5. Listar");
         System.out.println("6. Visualizar menu");
-        System.out.println("7. Monitorar chave");
+        System.out.println("7. Monitorar chave <chave>");
         System.out.println("8. Sair");
         System.out.print("Digite a opção:  ");
     }
