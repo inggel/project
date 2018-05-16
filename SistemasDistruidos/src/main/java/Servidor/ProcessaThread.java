@@ -20,6 +20,7 @@ public class ProcessaThread implements Runnable{
     private boolean cria, deleta, atualiza;
     private CRUD crud;
     private List<String> inst = new ArrayList<String>();
+    private List<MonitorObject> monitorObject = new ArrayList<MonitorObject>();
     private io.grpc.stub.StreamObserver<ComandResponse> responseObserverGrpc;
     private String monChave = "";
 
@@ -106,38 +107,70 @@ public class ProcessaThread implements Runnable{
 
                             default:
                                 break;
+                        }                      
+                                                          
+                        // Parte de Monitoramento add no list
+                        if(monitorObject.size() > 0 && !inst.get(0).equalsIgnoreCase("5") && !inst.get(0).equalsIgnoreCase("7")){
+                            for(MonitorObject mo : monitorObject){
+                                if(mo.getSocketUdp() != null && mo.getMonChave().equalsIgnoreCase(inst.get(1)) 
+                                        && receivePacket != null){
+                                    
+                                    dados = "\nOw callback da chave cara - " +mo.getMonChave()+ " Comandos: " + inst;
+                                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
+                                    sendPacket = mo.getPacoteUdp();
+                                    serverSocket = mo.getSocketUdp();
+                                    serverSocket.send(sendPacket);
+                                }
+//                                    try{
+//                                        ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd("Ow callback da chave cara - " +dados + "Comandos: " + inst).build();
+//                                        this.responseObserverGrpc.onNext(rspGrpc);
+//                                    } catch(Exception e){
+//                                        System.out.println("Sucesso!");
+//                                    }
+                                if(mo.getResponseObserverGrpc() != null && mo.getMonChave().equalsIgnoreCase(inst.get(1))
+                                        && !inst.get(0).equalsIgnoreCase("5") && !inst.get(0).equalsIgnoreCase("7")){
+                                    try{
+                                        ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd("Ow callback da chave cara - " + dados + "Comandos: " + inst +"\n").build();
+                                        mo.getResponseObserverGrpc().onNext(rspGrpc);
+                                    } catch(Exception e){}
+                                }
+                            }
                         }
-
-                        if(receivePacket != null){
+                        
+                        // Parte de envio
+                        if(receivePacket != null){                            
                             sendData = dados.getBytes();
                             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
                             getServerSocket().send(sendPacket);
-                             cmd.remove();
-                            if(inst.get(0).equalsIgnoreCase("7") && responseObserverGrpc != null){
+                            cmd.remove();
+                            
+                            if(inst.get(0).equalsIgnoreCase("7")){
+                                // Cria um objeto e add a chave e para quem mandar.
+                                MonitorObject monObj = new MonitorObject();
+                                monObj.setMonChave(monChave);
+                                monObj.setPacoteUdp(sendPacket);
+                                monObj.setSocketUdp(serverSocket);
+                                monitorObject.add(monObj);
+                                
                                 dados = "Monitorando\n";
-                                try{
-                                    ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd("Ow callback da chave cara - " +dados + "Comandos: " + inst).build();
-                                    this.responseObserverGrpc.onNext(rspGrpc);
-                                } catch(Exception e){
-                                    System.out.println("Sucesso!");
-                                }
                             }
                             break;
                         }
                                          
-                        if(responseObserverGrpc != null && !inst.get(0).equalsIgnoreCase("5") && !inst.get(0).equalsIgnoreCase("7") && !monChave.equalsIgnoreCase("")){
-                            if(monChave.equalsIgnoreCase(inst.get(1))){
-                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd("Ow callback da chave cara - " + dados + "Comandos: " + inst +"\n").build();
-                                this.responseObserverGrpc.onNext(rspGrpc);
+                        if(responseObserverGrpc != null){
+                            
+                            if(inst.get(0).equalsIgnoreCase("7")){
+                                // Adiciona no array o grpc e a chave que estao monitorando
+                                MonitorObject monObj = new MonitorObject();
+                                monObj.setMonChave(monChave);
+                                monObj.setResponseObserverGrpc(responseObserverGrpc);
+                                monitorObject.add(monObj);
+
+                                dados = "Monitorando\n";
                             }
-                        }else{
-                            if(responseObserverGrpc != null){
-                                if(inst.get(0).equalsIgnoreCase("7")){
-                                    dados = "Monitorando\n";
-                                }
-                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " ").build();
-                                this.responseObserverGrpc.onNext(rspGrpc);
-                            }
+                            
+                            ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " ").build();
+                            this.responseObserverGrpc.onNext(rspGrpc);
                         }
                     }
 

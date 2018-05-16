@@ -93,7 +93,7 @@ public class ComandoRpcCliente implements Runnable {
                             ComandRequest request = ComandRequest.newBuilder().setComm(comando).build();
                             requestStream.onNext(request);
                             try {
-                                Thread.sleep(100);
+                                Thread.sleep(300);
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(ComandoRpcCliente.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -125,7 +125,12 @@ public class ComandoRpcCliente implements Runnable {
             }
         };
         
-        stub.cmd(clientResponseObserver);
+            stub.cmd(clientResponseObserver);
+        
+            if(comando.charAt(0) == '8'){
+                System.out.println("Encerrando!");
+                break;
+            }
         }     
     }
 }
