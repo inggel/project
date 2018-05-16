@@ -128,7 +128,6 @@ public class ComandoRpcCliente implements Runnable {
             stub.cmd(clientResponseObserver);
         
             if(comando.charAt(0) == '8'){
-                System.out.println("Encerrando!");
                 break;
             }
         }     
