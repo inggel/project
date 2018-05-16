@@ -32,7 +32,7 @@ public class RecebeThread implements Runnable{
                     conTrd.setServerSocket(serverSocket);
                     conTrd.setCrud(crud);
                     conTrd.addComando(comando);
-                    
+                    receivePacket = null;
                 }
                                 
             }catch(Exception e){

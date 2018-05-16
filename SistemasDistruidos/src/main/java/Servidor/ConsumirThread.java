@@ -36,6 +36,7 @@ public class ConsumirThread implements Runnable {
                         procTrd.setServerSocket(serverSocket);
                         procTrd.setCrud(crud);
                         procTrd.addComando(cmd);
+                        receivePacket = null;
                     }
                     
                     /* Comando que e para sair, exibir o menu novamente e 
