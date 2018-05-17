@@ -34,9 +34,8 @@ public class ProcessaThread implements Runnable{
         
         while(true){
             String dados="";
-            
+            Iterator<String> cmd = comandos.iterator();
             try{
-                Iterator<String> cmd = comandos.iterator();
 
                 while(cmd.hasNext()){
                     String c = cmd.next();
@@ -110,6 +109,22 @@ public class ProcessaThread implements Runnable{
                                 break;
                         }                      
                                                           
+                        // resposta ao udp
+                        if(receivePacket != null){                            
+                            sendData = dados.getBytes();
+                            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
+                            getServerSocket().send(sendPacket);
+                            
+                            if(inst.get(0).equalsIgnoreCase("7")){
+                                // Cria um objeto e add a chave e para quem mandar.
+                                MonitorObject monObj = new MonitorObject();
+                                monObj.setMonChave(monChave);
+                                monObj.setPacoteUdp(sendPacket);
+                                monObj.setSocketUdp(serverSocket);
+                                monitorObject.add(monObj);
+                            }
+                        }
+                        
                         // Parte de Monitoramento add no list
                         if(monitorObject.size() > 0 && !inst.get(0).equalsIgnoreCase("5") && !inst.get(0).equalsIgnoreCase("7")){
                             for(MonitorObject mo : monitorObject){
@@ -118,10 +133,10 @@ public class ProcessaThread implements Runnable{
                                         && receivePacket != null){
                                     
                                     dados = "Ow callback da chave cara - " +mo.getMonChave()+ " Comandos: " + inst +"\n";
+                                    sendData = dados.getBytes();
                                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
-                                    sendPacket = mo.getPacoteUdp();
-                                    serverSocket = mo.getSocketUdp();
-                                    serverSocket.send(sendPacket);
+                                    DatagramSocket ss = mo.getSocketUdp();
+                                    ss.send(sendPacket);
                                 }
                                 
                                 // Grpc sender
@@ -137,23 +152,7 @@ public class ProcessaThread implements Runnable{
                             }
                         }
                         
-                        // Parte de envio
-                        if(receivePacket != null){                            
-                            sendData = dados.getBytes();
-                            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
-                            getServerSocket().send(sendPacket);
-                            
-                            if(inst.get(0).equalsIgnoreCase("7")){
-                                // Cria um objeto e add a chave e para quem mandar.
-                                MonitorObject monObj = new MonitorObject();
-                                monObj.setMonChave(monChave);
-                                monObj.setPacoteUdp(sendPacket);
-                                monObj.setSocketUdp(serverSocket);
-                                monitorObject.add(monObj);
-                            }
-                            receivePacket = null;
-                        }
-                                         
+                        // Resposta ao grpc         
                         if(responseObserverGrpc != null){
                             
                             if(inst.get(0).equalsIgnoreCase("7")){
@@ -166,11 +165,13 @@ public class ProcessaThread implements Runnable{
                             
                             ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " ").build();
                             this.responseObserverGrpc.onNext(rspGrpc);
-                            responseObserverGrpc = null;
                         }
+                        
                     }
 
                     cmd.remove();
+                    receivePacket = null;
+                    responseObserverGrpc = null;
                 }
             } catch(Exception e){
             }   
