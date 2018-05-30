@@ -5,6 +5,8 @@ import java.net.DatagramSocket;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ConsumirThread implements Runnable {
     private BlockingQueue<String> comandos = new LinkedBlockingQueue<String>();
@@ -22,31 +24,30 @@ public class ConsumirThread implements Runnable {
     @Override
     public void run() {
         while(true){
-            if(getComandos() != null && !comandos.isEmpty()){
-                
-                Iterator<String> c = getComandos().iterator();
-                
-                while(c.hasNext()){
-                    String cmd = c.next();
-                    String co = "" + cmd.charAt(0);
-                    
-                    // Comando que e para exibir o menu novamente ao cliente nao precisa ser processado
-                    if(!co.equalsIgnoreCase("6")){
-                        procTrd.setReceivePacket(receivePacket);
-                        procTrd.setServerSocket(serverSocket);
-                        procTrd.setCrud(crud);
-                        procTrd.addComando(cmd);
-                        receivePacket = null;
-                    }
-                    
-                    /* Comando que e para sair, exibir o menu novamente e 
-                    listar ao cliente nao precisa ser processado*/
-                    if(!co.equalsIgnoreCase("8") && !co.equalsIgnoreCase("6") && !co.equalsIgnoreCase("5") && !co.equalsIgnoreCase("4")){
-                        logTrd.addComando(cmd);
-                    }
-                    c.remove();
-                }
+            String cmd;
+            try {
+                cmd = comandos.take();
+            } catch (InterruptedException ex) {
+                continue;
             }
+            String co = "" + cmd.charAt(0);
+
+                // Comando que e para exibir o menu novamente ao cliente nao precisa ser processado
+                if(!co.equalsIgnoreCase("6")){
+                    procTrd.setReceivePacket(receivePacket);
+                    procTrd.setServerSocket(serverSocket);
+                    procTrd.setCrud(crud);
+                    procTrd.addComando(cmd);
+                    receivePacket = null;
+                }
+
+                /* Comando que e para sair, exibir o menu novamente e 
+                listar ao cliente nao precisa ser processado*/
+                if(!co.equalsIgnoreCase("8") && !co.equalsIgnoreCase("6") && !co.equalsIgnoreCase("5") && !co.equalsIgnoreCase("4")){
+                    logTrd.addComando(cmd);
+                }
+            
+            
         }
     }
     

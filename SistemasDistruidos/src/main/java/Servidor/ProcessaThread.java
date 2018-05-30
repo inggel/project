@@ -124,17 +124,37 @@ public class ProcessaThread implements Runnable{
                                 monitorObject.add(monObj);
                             }
                         }
+
+                        // Resposta ao grpc         
+                        if(responseObserverGrpc != null){
+                            
+                            if(inst.get(0).equalsIgnoreCase("7")){
+                                // Adiciona no array o grpc e a chave que estao monitorando
+                                MonitorObject monObj = new MonitorObject();
+                                monObj.setMonChave(monChave);
+                                monObj.setResponseObserverGrpc(responseObserverGrpc);
+                                monitorObject.add(monObj);
+                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " ").build();
+                                this.responseObserverGrpc.onNext(rspGrpc);
+                            }
+                            else
+                            {
+                                ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " ").build();
+                                this.responseObserverGrpc.onNext(rspGrpc);
+                                this.responseObserverGrpc.onCompleted();
+                            }
+                        }
+                        
                         
                         // Parte de Monitoramento add no list
                         if(monitorObject.size() > 0 && !inst.get(0).equalsIgnoreCase("5") && !inst.get(0).equalsIgnoreCase("7")){
                             for(MonitorObject mo : monitorObject){
                                 //Udp sender
-                                if(mo.getSocketUdp() != null && mo.getMonChave().equalsIgnoreCase(inst.get(1)) 
-                                        && receivePacket != null){
+                                if(mo.getSocketUdp() != null && mo.getMonChave().equalsIgnoreCase(inst.get(1))){
                                     
                                     dados = "Ow callback da chave cara - " +mo.getMonChave()+ " Comandos: " + inst +"\n";
                                     sendData = dados.getBytes();
-                                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getReceivePacket().getAddress(), getReceivePacket().getPort());
+                                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, mo.getPacoteUdp().getAddress(), mo.getPacoteUdp().getPort());
                                     DatagramSocket ss = mo.getSocketUdp();
                                     ss.send(sendPacket);
                                 }
@@ -146,25 +166,11 @@ public class ProcessaThread implements Runnable{
                                     try{
                                         dados = "Ow callback da chave cara - " +mo.getMonChave()+ "Comandos: " + inst +"\n";
                                         ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " ").build();
+                                        System.out.println("f1");
                                         mo.getResponseObserverGrpc().onNext(rspGrpc);
                                     } catch(Exception e){}
                                 }
                             }
-                        }
-                        
-                        // Resposta ao grpc         
-                        if(responseObserverGrpc != null){
-                            
-                            if(inst.get(0).equalsIgnoreCase("7")){
-                                // Adiciona no array o grpc e a chave que estao monitorando
-                                MonitorObject monObj = new MonitorObject();
-                                monObj.setMonChave(monChave);
-                                monObj.setResponseObserverGrpc(responseObserverGrpc);
-                                monitorObject.add(monObj);
-                            }
-                            
-                            ComandResponse rspGrpc = ComandResponse.newBuilder().setCmd(dados + " ").build();
-                            this.responseObserverGrpc.onNext(rspGrpc);
                         }
                         
                     }

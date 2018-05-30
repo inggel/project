@@ -79,7 +79,7 @@ public class ComandoRpcCliente implements Runnable {
                     
                     @Override
                     public void run() {
-                        while(requestStream.isReady()){
+                        if(requestStream.isReady()){
                             if(comando.charAt(0) == '8'){
                                 System.out.println("Encerrando!");
                                 try {
@@ -87,7 +87,6 @@ public class ComandoRpcCliente implements Runnable {
                                 } catch (Exception ex) {
                                     System.out.println("Erro ao encerrar o cli: " + ex);
                                 }
-                                break;
                             }
                             
                             ComandRequest request = ComandRequest.newBuilder().setComm(comando).build();
@@ -97,10 +96,9 @@ public class ComandoRpcCliente implements Runnable {
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(ComandoRpcCliente.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                            requestStream.onCompleted();
-                           
+                            if(comando.charAt(0) != '7')
+                                requestStream.onCompleted();
                         }
-                        
                     }
                 });
             }
@@ -109,7 +107,6 @@ public class ComandoRpcCliente implements Runnable {
             public void onNext(ComandResponse v) {
                 System.out.println("GRPC: " + v.getCmd());
                 requestStream.request(1);
-                System.out.print("Digite a opção: ");
             }
 
             @Override
@@ -126,6 +123,7 @@ public class ComandoRpcCliente implements Runnable {
         };
         
             stub.cmd(clientResponseObserver);
+            System.out.print("Digite a opção: ");
         
             if(comando.charAt(0) == '8'){
                 break;

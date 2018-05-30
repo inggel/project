@@ -58,6 +58,8 @@ public class GrpcReceiverThread implements Runnable {
                             conTrd.setCrud(crud);
                             conTrd.addComando(name);
                             
+                            System.out.println("f2");
+                            
                             if (serverCallStreamObserver.isReady()) {
                                 serverCallStreamObserver.request(1);
                             } else {
