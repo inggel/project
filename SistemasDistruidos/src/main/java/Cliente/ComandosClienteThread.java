@@ -90,6 +90,7 @@ public class ComandosClienteThread implements Runnable {
         System.out.println("6. Visualizar menu");
         System.out.println("7. Monitorar chave <chave>");
         System.out.println("8. Sair");
+        System.out.println("9. Criar snapShot <minutos>");
         System.out.print("Digite a opção:  ");
     }
 }

@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ProcessaThread implements Runnable{
@@ -23,6 +25,8 @@ public class ProcessaThread implements Runnable{
     private List<MonitorObject> monitorObject = new ArrayList<MonitorObject>();
     private io.grpc.stub.StreamObserver<ComandResponse> responseObserverGrpc;
     private String monChave = "";
+    private SnapShot ss;
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     public ProcessaThread(){
         // ctor
@@ -31,6 +35,8 @@ public class ProcessaThread implements Runnable{
     @Override
     public void run() {
         byte[] sendData = new byte[1401];
+        
+        ss = new SnapShot();
         
         while(true){
             String dados="";
@@ -50,7 +56,6 @@ public class ProcessaThread implements Runnable{
                     } else {
 
                         inst = Arrays.asList(c.split(" ")); 
-
                         switch(inst.get(0).replaceAll("\\u0000", "").charAt(0)){
                             /* Criar um dado no map */
                             case '1':
@@ -104,10 +109,20 @@ public class ProcessaThread implements Runnable{
                                 monChave = inst.get(1);
                                 dados += "Monitorando\n";
                                 break;
-
+                            
+                            case '9':
+                                int segundos = Integer.parseInt(inst.get(1));
+                                ss.getIntervalosSS().add(segundos);
+                                executor.execute(ss);
+                                dados += "Snap shot criado.";
+                                
+                                break;
+                                
                             default:
                                 break;
-                        }                      
+                        } 
+                        //sempre que recebe um comando atualiza o mapa no snapShot
+                        ss.setProc(crud);
                                                           
                         // resposta ao udp
                         if(receivePacket != null){                            
