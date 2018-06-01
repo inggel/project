@@ -69,7 +69,7 @@ public class CRUD {
         try{ 
                     FileOutputStream fileout = new FileOutputStream(
                                     "./properties/base.properties", true);
-                    Properties prop = ManFileLog.getProp();
+                    Properties prop = ManFileLog.getProp("./properties/log.properties");
                    
                     prop.put("chave", chave.toString()
                             .replaceAll("\u0000", "") /* removes NUL chars */

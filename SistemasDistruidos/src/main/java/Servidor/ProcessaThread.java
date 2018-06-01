@@ -123,6 +123,7 @@ public class ProcessaThread implements Runnable{
                         } 
                         //sempre que recebe um comando atualiza o mapa no snapShot
                         ss.setProc(crud);
+                        
                                                           
                         // resposta ao udp
                         if(receivePacket != null){                            
@@ -213,17 +214,12 @@ public class ProcessaThread implements Runnable{
     /* Metodo utilizado pelo log para carregar os dados no map de dados */
     public CRUD processaComando(List<String> inst, CRUD crud){
         String dados = "";
-        String c = inst.get(1)
-                        .replaceAll("\\u0000", "")
-                        .replaceAll("\\]","");
-        
-        inst = Arrays.asList(c.split(" "));
-        
-        switch(inst.get(0).replaceAll("\\u0000", "").charAt(0)){
+       
+        switch(inst.get(0).charAt(0)){
             case '1':
                 cria = crud.create(new BigInteger(inst.get(1)
                         .replaceAll("\\u0000", "")
-                        .replaceAll("\\]","")), valor(inst));
+                        .replaceAll("\\]","")), inst.get(2));
                 if(cria)
                     dados = "Criado com sucesso!\n";
                 else
@@ -243,7 +239,7 @@ public class ProcessaThread implements Runnable{
             case '3':
                 atualiza = crud.update(new BigInteger(inst.get(1)
                         .replaceAll("\\u0000", "")
-                        .replaceAll("\\]","")), valor(inst));
+                        .replaceAll("\\]","")), inst.get(2));
                  if(atualiza)
                     dados = "Atualizado com sucesso!\n";
                  else

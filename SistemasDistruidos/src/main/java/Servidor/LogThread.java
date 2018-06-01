@@ -26,7 +26,7 @@ public class LogThread implements Runnable {
                         
                         FileOutputStream fileout = new FileOutputStream(
                                     "./properties/log.properties", true);
-                        Properties prop = ManFileLog.getProp();
+                        Properties prop = ManFileLog.getProp("./properties/log.properties");
                         prop.clear();
                                                 
                         prop.put("comando"+java.util.UUID.randomUUID(), ("[" + cmd + "]")

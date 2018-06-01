@@ -20,8 +20,9 @@ public class MainServidor {
         List<String> inst = new ArrayList<String>();
         // Arquivo de propriedade porta e ip
         Properties prop = UDPServer.getProp();
-        // Propertie para o arquivo de log
-        Properties recarrega;
+        // Propertie para o arquivo de log e snapshot
+        Properties recarregaLog;
+        Properties recarregaSnap;
         // Mapa e crud para converter e armazenar os dados do arquivo de log
         Map<BigInteger, String> map;
         CRUD crud = new CRUD();
@@ -39,20 +40,57 @@ public class MainServidor {
             ProcessaThread pt = new ProcessaThread();        
             ExecutorService executor = Executors.newCachedThreadPool();
             
-            File file = new File("./properties/log.properties");
+            ArrayList<File> arquivos = new ArrayList<File>();
             
-            if(file.exists()){
-                recarrega = ManFileLog.getProp();
-                map = new HashMap<BigInteger, String>((Map) recarrega);
-                                
-                Set propertySet = map.entrySet();
-                for(Object o: propertySet){
+            File logFile = new File("./properties/log.properties");
+            File diretorio = new File("./properties/SnapShot/");
+            File snapFile = new File("");
+            
+            if(diretorio.exists()){
+                File files[] = diretorio.listFiles();
+                if(files.length > 0)
+                    snapFile = files[files.length-1];
+            }
+            
+            if(logFile.exists()){
+                arquivos.add(logFile);
+            }
+            
+            if(snapFile.exists()){
+                arquivos.add(snapFile);
+            }
+            
+            map = new HashMap<BigInteger, String>();
+             
+            for(File f : arquivos){
+                Set propertySnap = ManFileLog.getProp(f.getAbsolutePath()).entrySet();
+                
+                for(Object o : propertySnap){
                     Map.Entry entry = (Map.Entry) o;
-                    inst = Arrays.asList(o.toString().split("\\["));
-                    crud = pt.processaComando(inst, crud);
+                    BigInteger chave = new BigInteger(entry.getValue().toString().substring(3).split(" ")[0]);
+                    String comando = entry.getValue().toString().substring(1, entry.getValue().toString().indexOf(" "));
+                    String valor = comando +" "+entry.getValue().toString().substring(5, entry.getValue().toString().length() - 1);
+                    
+                    map.put(chave, valor);
                 }
             }
-            // Inicia thread para receber comandos dos clientes
+             
+            Set propertySet = map.entrySet();
+            for(Object o: propertySet){
+                Map.Entry entry = (Map.Entry) o;
+                String cmd = entry.getValue().toString().substring(0, entry.getValue().toString().indexOf(" "));
+                String valor = entry.getValue().toString().substring(entry.getValue().toString().indexOf(" ")+1, entry.getValue().toString().length());
+                String chave = entry.getKey().toString();
+                
+                inst.add(cmd);
+                inst.add(chave);
+                inst.add(valor);
+                
+                crud = pt.processaComando(inst, crud);
+                inst.clear();
+            }
+            
+// Inicia thread para receber comandos dos clientes
             System.out.println("Servidor iniciado!");
             
             LogThread logTrd = new LogThread();
