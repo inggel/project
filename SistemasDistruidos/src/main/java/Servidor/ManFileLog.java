@@ -17,7 +17,7 @@ public class ManFileLog {
    }
     
     public static Long timeStamp(){
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Timestamp timestamp = new Timestamp(System.nanoTime());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
         return timestamp.getTime();
     }
