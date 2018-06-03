@@ -25,9 +25,7 @@ public class ProcessaThread implements Runnable{
     private List<MonitorObject> monitorObject = new ArrayList<MonitorObject>();
     private io.grpc.stub.StreamObserver<ComandResponse> responseObserverGrpc;
     private String monChave = "";
-    private SnapShot ss;
-    private ExecutorService executor = Executors.newCachedThreadPool();
-
+    
     public ProcessaThread(){
         // ctor
     }
@@ -35,9 +33,7 @@ public class ProcessaThread implements Runnable{
     @Override
     public void run() {
         byte[] sendData = new byte[1401];
-        
-        ss = new SnapShot();
-        
+
         while(true){
             String dados="";
             Iterator<String> cmd = comandos.iterator();
@@ -109,21 +105,10 @@ public class ProcessaThread implements Runnable{
                                 monChave = inst.get(1);
                                 dados += "Monitorando\n";
                                 break;
-                            
-                            case '9':
-                                int segundos = Integer.parseInt(inst.get(1));
-                                ss.getIntervalosSS().add(segundos);
-                                executor.execute(ss);
-                                dados += "Snap shot criado.";
-                                
-                                break;
-                                
+                           
                             default:
                                 break;
                         } 
-                        //sempre que recebe um comando atualiza o mapa no snapShot
-                        ss.setProc(crud);
-                        
                                                           
                         // resposta ao udp
                         if(receivePacket != null){                            
@@ -212,22 +197,22 @@ public class ProcessaThread implements Runnable{
     }
     
     /* Metodo utilizado pelo log para carregar os dados no map de dados */
-    public CRUD processaComando(List<String> inst, CRUD crud){
+    public CRUD processaComando(String cmd, List<String> inst, CRUD crud){
         String dados = "";
        
-        switch(inst.get(0).charAt(0)){
-            case '1':
-                cria = crud.create(new BigInteger(inst.get(1)
+        switch(Integer.parseInt(cmd)){
+            case 1:
+                cria = crud.create(new BigInteger(inst.get(0)
                         .replaceAll("\\u0000", "")
-                        .replaceAll("\\]","")), inst.get(2));
+                        .replaceAll("\\]","")), inst.get(1));
                 if(cria)
                     dados = "Criado com sucesso!\n";
                 else
                     dados = "Não foi possivel completar a operacao\n";
                 break;
 
-            case '2':
-                deleta = crud.delete(new BigInteger(inst.get(1)
+            case 2:
+                deleta = crud.delete(new BigInteger(inst.get(0)
                         .replaceAll("\\u0000", "")
                         .replaceAll("\\]","")));
                 if(deleta)
@@ -236,10 +221,10 @@ public class ProcessaThread implements Runnable{
                     dados = "Não foi possivel completar a operacao\n";
                 break;
 
-            case '3':
-                atualiza = crud.update(new BigInteger(inst.get(1)
+            case 3:
+                atualiza = crud.update(new BigInteger(inst.get(0)
                         .replaceAll("\\u0000", "")
-                        .replaceAll("\\]","")), inst.get(2));
+                        .replaceAll("\\]","")), inst.get(1));
                  if(atualiza)
                     dados = "Atualizado com sucesso!\n";
                  else

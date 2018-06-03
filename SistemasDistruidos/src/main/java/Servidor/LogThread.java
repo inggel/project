@@ -1,6 +1,8 @@
 package Servidor;
 
+import java.sql.Timestamp;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
@@ -29,7 +31,7 @@ public class LogThread implements Runnable {
                         Properties prop = ManFileLog.getProp("./properties/log.properties");
                         prop.clear();
                                                 
-                        prop.put("comando"+java.util.UUID.randomUUID(), ("[" + cmd + "]")
+                        prop.put(ManFileLog.timeStamp().toString(), ("[" + cmd + " ]")
                                 .replaceAll("\u0000", "") /* removes NUL chars */
                                 .replaceAll("\\u0000", "") /* removes backslash+u0000 */);
 

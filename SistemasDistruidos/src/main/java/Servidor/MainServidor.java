@@ -8,11 +8,13 @@ import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class MainServidor {
     public static void main(String args[]) throws Exception {
@@ -20,9 +22,6 @@ public class MainServidor {
         List<String> inst = new ArrayList<String>();
         // Arquivo de propriedade porta e ip
         Properties prop = UDPServer.getProp();
-        // Propertie para o arquivo de log e snapshot
-        Properties recarregaLog;
-        Properties recarregaSnap;
         // Mapa e crud para converter e armazenar os dados do arquivo de log
         Map<BigInteger, String> map;
         CRUD crud = new CRUD();
@@ -61,32 +60,41 @@ public class MainServidor {
             }
             
             map = new HashMap<BigInteger, String>();
-             
+            TreeMap<BigInteger, String> mapOrdenado = new TreeMap<BigInteger, String>();
+            ArrayList<Registro> registros = new ArrayList<Registro>();
             for(File f : arquivos){
                 Set propertySnap = ManFileLog.getProp(f.getAbsolutePath()).entrySet();
-                
+                               
                 for(Object o : propertySnap){
                     Map.Entry entry = (Map.Entry) o;
-                    BigInteger chave = new BigInteger(entry.getValue().toString().substring(3).split(" ")[0]);
-                    String comando = entry.getValue().toString().substring(1, entry.getValue().toString().indexOf(" "));
-                    String valor = comando +" "+entry.getValue().toString().substring(5, entry.getValue().toString().length() - 1);
+                    String  entrada = entry.getValue().toString();
+                    String partes[] = entrada.split(" ");
+                    String chave = partes[1];
+                    String comando = partes[0].replace("[", "");
+                    String valor = "";
                     
-                    map.put(chave, valor);
+                    for(int i = 2; i < partes.length; i++)
+                        valor += partes[i] + " ";
+                    
+                    valor = valor.substring(0, valor.length() - 2);
+                    
+                    registros.add(new Registro(Long.parseLong(entry.getKey().toString()), comando, new BigInteger(chave), valor));                    
                 }
             }
-             
-            Set propertySet = map.entrySet();
-            for(Object o: propertySet){
-                Map.Entry entry = (Map.Entry) o;
-                String cmd = entry.getValue().toString().substring(0, entry.getValue().toString().indexOf(" "));
-                String valor = entry.getValue().toString().substring(entry.getValue().toString().indexOf(" ")+1, entry.getValue().toString().length());
-                String chave = entry.getKey().toString();
+            
+            Collections.sort(registros, new Comparator<Registro>() {
+                public int compare(Registro r1, Registro r2) {
+                    Long s1 = r1.getDataCriacao();
+                    Long s2 = r2.getDataCriacao();
+                    return (s1 < s2 ? -1 : (s1 == s2 ? 1 : 0));
+                }
+            });
+            
+            for(Registro r: registros){                                
+                inst.add(r.getChave().toString());
+                inst.add(r.getValor());
                 
-                inst.add(cmd);
-                inst.add(chave);
-                inst.add(valor);
-                
-                crud = pt.processaComando(inst, crud);
+                crud = pt.processaComando(r.getComando(), inst, crud);
                 inst.clear();
             }
             
@@ -98,12 +106,14 @@ public class MainServidor {
             ConsumirThread conTrd = new ConsumirThread(logTrd, procTrd);
             rcvTrd = new RecebeThread(conTrd, serverSocket, crud);
             GrpcReceiverThread grpcRcv = new GrpcReceiverThread(conTrd, crud, procTrd);
+            SnapShot ss = new SnapShot(crud);
                         
             executor.execute(rcvTrd);
             executor.execute(conTrd);
             executor.execute(logTrd);
             executor.execute(procTrd);
             executor.execute(grpcRcv);
+            executor.execute(ss);
 
             executor.shutdown();
             while (!executor.awaitTermination(24L, TimeUnit.HOURS)) {
