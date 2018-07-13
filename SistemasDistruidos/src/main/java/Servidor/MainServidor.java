@@ -51,13 +51,14 @@ public class MainServidor {
                     snapFile = files[files.length-1];
             }
             
+            if(snapFile.exists()){
+                arquivos.add(snapFile);
+            }
+            
             if(logFile.exists()){
                 arquivos.add(logFile);
             }
             
-            if(snapFile.exists()){
-                arquivos.add(snapFile);
-            }
             
             map = new HashMap<BigInteger, String>();
             TreeMap<BigInteger, String> mapOrdenado = new TreeMap<BigInteger, String>();
